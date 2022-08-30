@@ -26,7 +26,8 @@ Vue.use(VueQuillEditor, /* { default global options } */ )
 Vue.use(element, { size: Cookies.get('size') || 'medium', })
 import './assets/style/element-variables.scss';
 import './assets/style/index.scss'
-
+import api from './api';
+Vue.prototype.$api = api
 // 把echarts挂载到 Vue原型上，以便在全局访问
 Vue.prototype.$echarts = echarts
 
@@ -35,10 +36,10 @@ Object.keys(filters).forEach(key => {
     Vue.filter(key, filters[key])
 })
 
-if (process.env.NODE_ENV === 'development') {
-    const { mockXHR } = require('./mock')
-    mockXHR()
-}
+// if (process.env.NODE_ENV === 'development') {
+//     const { mockXHR } = require('./mock')
+//     mockXHR()
+// }
 
 Vue.config.productionTip = false
 

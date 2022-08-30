@@ -1,49 +1,11 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 Vue.use(VueRouter)
-    // 普通方式
-    // import Login from "components/Login.vue"
-    // import Home from 'components/Home.vue'
-    // import Welcome from "components/Welcome.vue"
-
-// 懒加载: 登录——主页——欢迎页
-// const Login = () =>
-//     import ( /* webpackChunkName: "login_Home_Welcome" */ "views/Login.vue")
-// const Home = () =>
-//     import ( /* webpackChunkName: "login_Home_Welcome" */ "views/Home.vue")
-// const Welcome = () =>
-//     import ( /* webpackChunkName: "login_Home_Welcome" */ "components/welcome")
-
-// // 用户管理
-// // const Users = () => import(/* webpackChunkName: "users" */ "components/user/Users.vue")
-
-// // 权限管理
-// const RightsList = () =>
-//     import ( /* webpackChunkName: "rights" */ "components/power/Rights.vue")
-// const RolesList = () =>
-//     import ( /* webpackChunkName: "rights" */ "components/power/Roles.vue")
-
-// // 商品管理
-// const Categories = () =>
-//     import ( /* webpackChunkName: "goods" */ "components/goods/Categories.vue")
-// const Params = () =>
-//     import ( /* webpackChunkName: "goods" */ "components/goods/Params.vue")
-// const List = () =>
-//     import ( /* webpackChunkName: "goods" */ "components/goods/List.vue")
-// const AddGoods = () =>
-//     import ( /* webpackChunkName: "goods" */ "components/goods/AddGoods.vue")
-
-// // 订单管理
-// const Order = () =>
-//     import ( /* webpackChunkName: "order_Report" */ "components/order/Order.vue")
-
-// // 数据可视化
-// const DataView = () =>
-//     import ( /* webpackChunkName: "order_Report" */ "views/DataView.vue")
-
-
 import userRouter from './modules/user';
 import systemRouter from './modules/system';
+import wechatRouter from './modules/wechat';
+
+import LogRouter from './modules/log';
 import Layout from '@/views/layout';
 export const constantRoutes = [{
         path: '/redirect',
@@ -91,6 +53,8 @@ export const constantRoutes = [{
 export const asyncRoutes = [
     // ...userRouter,
     ...systemRouter,
+    ...wechatRouter,
+    ...LogRouter, 
     { path: '*', redirect: '/404', hidden: true },
 ]
 

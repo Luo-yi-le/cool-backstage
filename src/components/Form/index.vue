@@ -63,7 +63,7 @@ export default {
     // 需要绑定的数据
     formValue: mimi.vue.getPropObject(),
     //校验
-    rules: mimi.vue.getPropObject(),
+    rules: mimi.vue.getPropObject({}),
     // 一行几个
     column: [String, Number],
   },

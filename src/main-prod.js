@@ -11,7 +11,8 @@ import * as filters from './filters'
 import './components/icons'
 import './utils/permission' // permission
 import './utils/error-log'
-
+import api from './api';
+Vue.prototype.$api = api
 
 // 导入已配置好的依赖 axios
 import './network/axios'

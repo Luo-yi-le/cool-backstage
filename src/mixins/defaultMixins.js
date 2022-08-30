@@ -6,15 +6,19 @@ export default {
             loading: false,
             multipleSelection: [],
             pagination: {
-                currentPage: 1,
-                pageSize: 5,
+                page: 1,
+                size: 10,
+                total: 100
+            },
+            tableData: [],
+            api: {
+                list: ()=>{},
             },
             layout: "total, sizes, prev, pager, next, jumper",
             background: true,
             pageSizes: [5, 10, 20, 30],
             pagerCount: 5,
             hasPage: true,
-            total: 100,
             defaultFiledButton: [{
                 label: '操作',
                 render: (h, scope) => {
@@ -38,20 +42,37 @@ export default {
             }
         }
     },
+    created() {
+        console.log(this.$options.name)
+    },
+    async mounted() {
+        await this.init();
+    },
     methods: {
-        async init() { },
+        async init() {
+            let res = await this.api.list(this.pagination);
+            if (res) {
+                const { list, pagination } = res;
+                this.tableData = list;
+                this.pagination = pagination;
+            }
+        },
         handleSelectionChange(value) {
             this.multipleSelection = value;
         },
         async handleSizeChange(value) {
-            this.pagination.currentPage = 1
-            this.pagination.pageSize = value
+            this.pagination.page = 1
+            this.pagination.size = value;
+            await this.init();
         },
         handleEdit(index, row) {
             this.visible.show = true;
             this.formValue = row
         },
         handleDelete(index, row) { },
-        async handleCurrentChange() { },
+        async handleCurrentChange(value) {
+            this.pagination.page = value
+            await this.init();
+         },
     },
 }

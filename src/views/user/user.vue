@@ -73,7 +73,7 @@ export default {
   },
   components: {
     MimiForm,
-    MimiTable: () => import("@/components/Table/table"),
+    MimiTable: () => import("@/components/Table"),
     // MimiForm: () => import("@/components/Form"),
     MimiDialog: () => import("@/components/Dialog"),
   },

@@ -1,83 +1,120 @@
 <template>
   <div class="login-container">
-    <el-form
-      ref="loginForm"
-      :model="loginForm"
-      :rules="loginRules"
-      class="login-form"
-      autocomplete="on"
-      label-position="left"
-    >
-      <div class="title-container">
-        <h3 class="title">Login Form</h3>
-      </div>
-
-      <el-form-item prop="username">
-        <span class="svg-container">
-          <svg-icon icon-class="user" />
-        </span>
-        <el-input
-          ref="username"
-          v-model="loginForm.username"
-          placeholder="Username"
-          name="username"
-          type="text"
-          tabindex="1"
+    <el-tabs v-model="activeName" stretch class="pane">
+      <el-tab-pane label="账 号 登 录" name="account">
+        <el-form
+          ref="loginForm"
+          :model="loginForm"
+          :rules="loginRules"
+          class="login-form"
           autocomplete="on"
-        />
-      </el-form-item>
+          label-position="left"
+        >
+          <!-- <div class="title-container">
+            <h3 class="title">账 号 登 录</h3>
+          </div> -->
 
-      <el-tooltip
-        v-model="capsTooltip"
-        content="Caps lock is On"
-        placement="right"
-        manual
-      >
-        <el-form-item prop="password">
-          <span class="svg-container">
-            <svg-icon icon-class="password" />
-          </span>
-          <el-input
-            :key="passwordType"
-            ref="password"
-            v-model="loginForm.password"
-            :type="passwordType"
-            placeholder="Password"
-            name="password"
-            tabindex="2"
-            autocomplete="on"
-            @keyup.native="checkCapslock"
-            @blur="capsTooltip = false"
-            @keyup.enter.native="handleLogin"
-          />
-          <span class="show-pwd" @click="showPwd">
-            <svg-icon :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'" />
-          </span>
-        </el-form-item>
-      </el-tooltip>
+          <el-form-item prop="username">
+            <span class="svg-container">
+              <svg-icon icon-class="user" />
+            </span>
+            <el-input
+              ref="username"
+              v-model="loginForm.username"
+              placeholder="Username"
+              name="username"
+              type="text"
+              tabindex="1"
+              autocomplete="on"
+            />
+          </el-form-item>
 
-      <el-button
-        :loading="loading"
-        type="primary"
-        style="width: 100%; margin-bottom: 30px"
-        @click.native.prevent="handleLogin"
-        >Login</el-button
-      >
-    </el-form>
+          <el-tooltip
+            v-model="capsTooltip"
+            content="Caps lock is On"
+            placement="right"
+            manual
+          >
+            <el-form-item prop="password">
+              <span class="svg-container">
+                <svg-icon icon-class="password" />
+              </span>
+              <el-input
+                :key="passwordType"
+                ref="password"
+                v-model="loginForm.password"
+                :type="passwordType"
+                placeholder="Password"
+                name="password"
+                tabindex="2"
+                autocomplete="on"
+                @keyup.native="checkCapslock"
+                @blur="capsTooltip = false"
+                @keyup.enter.native="handleLogin"
+              />
+              <span class="show-pwd" @click="showPwd">
+                <svg-icon
+                  :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'"
+                />
+              </span>
+            </el-form-item>
+          </el-tooltip>
+
+          <el-form-item class="captcha-number" prop="verifyCode">
+            <el-input
+              v-model="loginForm.verifyCode"
+              class="captcha-input"
+              placeholder="请输入验证码"
+            ></el-input>
+            <captcha
+              ref="captcha"
+              class="captcha"
+              @captchaId="(captchaId) => (loginForm.captchaId = captchaId)"
+              v-model="loginForm.captchaId"
+              @change="
+                () => {
+                  loginForm.verifyCode = '';
+                }
+              "
+            ></captcha>
+          </el-form-item>
+
+          <el-button
+            :loading="loading"
+            type="primary"
+            style="width: 100%; margin-bottom: 30px"
+            @click.native.prevent="handleLogin"
+            >登 录</el-button
+          >
+        </el-form>
+      </el-tab-pane>
+      <el-tab-pane label="微 信 登 录" name="wechat">
+        <wechatQrCode v-if="activeName == 'wechat'"></wechatQrCode>
+      </el-tab-pane>
+    </el-tabs>
   </div>
 </template>
 
 <script>
 import { validUsername } from "@/utils/validate";
 import SocialSign from "./components/SocialSignin";
+import Captcha from "./components/Captcha.vue";
+import wechatQrCode from "./components/wechatQrCode";
 
 export default {
   name: "Login",
-  components: { SocialSign },
+  components: { SocialSign, Captcha, wechatQrCode },
   data() {
     const validateUsername = (rule, value, callback) => {
       if (!value) {
         callback(new Error("请输入用户名！"));
+      } else {
+        callback();
+      }
+    };
+    const validateCaptcha = (rule, value, callback) => {
+      if (value.length < 4) {
+        callback(new Error("请输入4位验证码"));
       } else {
         callback();
       }
@@ -90,13 +127,17 @@ export default {
       }
     };
     return {
+      activeName: "account",
       loginForm: {
         username: "admin",
         password: "123456",
+        captchaId: "",
+        verifyCode: "",
       },
       loginRules: {
         username: [{ required: true, trigger: "blur", validator: validateUsername }],
         password: [{ required: true, trigger: "blur", validator: validatePassword }],
+        verifyCode: [{ required: true, trigger: "blur", validator: validateCaptcha }],
       },
       passwordType: "password",
       capsTooltip: false,
@@ -150,30 +191,17 @@ export default {
       this.$refs.loginForm.validate(async (valid) => {
         if (valid) {
           this.loading = true;
-          this.$store.dispatch("user/login", this.loginForm)
-          .then(() => {
-              this.$router.push({ path: this.redirect || '/', query: this.otherQuery })
-              this.loading = false
+          this.$store
+            .dispatch("user/login", this.loginForm)
+            .then(() => {
+              this.$router.push({ path: this.redirect || "/", query: this.otherQuery });
+              this.loading = false;
             })
             .catch(() => {
-              this.loading = false
-            })
-          // let { data: result } = await this.$http.post("login", this.loginForm);
-          // if (result.meta.status !== 200) {
-          //   this.$message.error({
-          //     message: result.meta.msg,
-          //     duration: 1000,
-          //   });
-          // }else {
-          //    this.$store.dispatch('user/login', this.loginForm)
-          //   .then(() => {
-          //     this.$router.push({ path: this.redirect || '/', query: this.otherQuery })
-          //     this.loading = false
-          //   })
-          //   .catch(() => {
-          //     this.loading = false
-          //   })
-          // }
+              this.loading = false;
+              this.$refs.captcha.refresh();
+              this.loginForm.verifyCode = "";
+            });
         } else {
           console.log("error submit!!");
           return false;
@@ -209,6 +237,20 @@ export default {
   },
 };
 </script>
+<style lang="scss" scoped>
+.pane {
+  ::v-deep {
+    .el-tabs__item {
+      font-size: 26px;
+      color: #fff;
+    }
+
+    .is-active {
+      color: #409eff;
+    }
+  }
+}
+</style>
 
 <style lang="scss">
 /* 修复input 背景不协调 和光标变色 */
@@ -266,14 +308,33 @@ $light_gray: #eee;
   width: 100%;
   background-color: $bg;
   overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 
   .login-form {
     position: relative;
     width: 520px;
     max-width: 100%;
-    padding: 160px 35px 0;
+    // padding: 0px 35px 0;
     margin: 0 auto;
     overflow: hidden;
+
+    .captcha-number {
+      width: 65%;
+      display: flex;
+      .captcha {
+        display: inline-block;
+        position: absolute;
+        right: -55%;
+      }
+      .captcha-input {
+        width: 100%;
+      }
+      ::v-deep.el-form-item__content {
+        width: 100%;
+      }
+    }
   }
 
   .tips {

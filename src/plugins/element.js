@@ -49,9 +49,17 @@ import {
     Badge,
     InfiniteScroll,
     Loading,
+    Radio,
+    RadioButton,
+    RadioGroup,
+    Image
 } from 'element-ui'
 
 const components = [
+    Image,
+    RadioButton,
+    RadioGroup,
+    Radio,
     Button,
     Form,
     FormItem,

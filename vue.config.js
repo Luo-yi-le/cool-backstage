@@ -14,7 +14,16 @@ module.exports = {
     devServer: {
         open: true,
         port: 8080,
-        proxy: null,
+        proxy: {
+            '/api': {
+                target: 'http://127.0.0.1:8001',
+                changeOrigin: true,
+                secure: false,
+                pathRewrite: {
+                    '^/api': ''
+                }
+            },
+        },
     },
     pluginOptions: {
         electronBuilder: electron
@@ -23,6 +32,11 @@ module.exports = {
         resolve: {
             alias: {
                 '@': resolve('src'),
+                '@comp': resolve('src/components'),
+                '@util': resolve('src/utils'),
+                '@mixin': resolve('src/mixins'),
+                '@api': resolve('src/api'),
+                '@filter': resolve('src/filters'),
                 // components: "@/components",
                 // content: "@/components/content",
                 // common: "@/components/common",

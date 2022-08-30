@@ -2,15 +2,18 @@ const Mock = require('mockjs')
 const { param2Obj } = require('./utils')
 
 const user = require('./modules/user');
+const wechat = require('./modules/wechat');
 
 
 const mocks = [
     ...user,
+    ...wechat,
 ];
 
 
 function mockXHR() {
     Mock.XHR.prototype.proxy_send = Mock.XHR.prototype.send
+    console.log(Mock.XHR)
     Mock.XHR.prototype.send = function() {
         if (this.custom.xhr) {
             this.custom.xhr.withCredentials = this.withCredentials || false

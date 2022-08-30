@@ -1,0 +1,152 @@
+/* 公共颜色变量 */
+.clearfix {
+    *zoom: 1;
+}
+
+.clearfix::after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+div {
+    text-align: left;
+}
+
+.public-account-management {
+    
+    min-width: 1200px;
+    width: 1200px;
+    margin: 0 auto;
+
+    .left {
+        float: left;
+        display: inline-block;
+        width: 350px;
+        height: 715px;
+        background: url( "../../../assets/images/wechat/iphone_backImg.png") no-repeat;
+        background-size: 100% auto;
+        padding: 581px 25px 88px;
+        position: relative;
+        box-sizing: border-box;
+
+        /*第一级菜单*/
+        .menu {
+            .menu_bottom {
+                position: relative;
+                float: left;
+                display: inline-block;
+                box-sizing: border-box;
+                width: 100px;
+                /*height: 44px;*/
+                /*line-height: 44px;*/
+                text-align: center;
+                background-color: #e2e2e2;
+                border: 1px solid #ebedee;
+                cursor: pointer;
+
+                &.menu_addicon {
+                    height: 46px;
+                    line-height: 46px;
+                }
+
+                .menu_item {
+                    height: 44px;
+                    line-height: 44px;
+                    /*padding: 14px 0;*/
+                    text-align: center;
+                    box-sizing: border-box;
+
+                    &.active {
+                        border: 1px solid #2bb673;
+                    }
+                }
+
+                .menu_subItem {
+                    height: 44px;
+                    line-height: 44px;
+                    text-align: center;
+                    box-sizing: border-box;
+
+                    /*padding: 14px 0;*/
+                    &.active {
+                        border: 1px solid #2bb673;
+                    }
+                }
+            }
+
+            i {
+                color: #2bb673;
+            }
+
+            /*第二级菜单*/
+            .submenu {
+                position: absolute;
+                width: 100px;
+                bottom: 45px;
+
+                .subtitle {
+                    background-color: #e8e7e7;
+                    box-sizing: border-box;
+                    margin-bottom: 2px;
+                }
+            }
+        }
+
+        .save_btn {
+            position: absolute;
+            // bottom: -50px;
+            left: 100px;
+        }
+    }
+
+    /*右边菜单内容*/
+    .right {
+        float: left;
+        width: 63%;
+        background-color: #e8e7e7;
+        padding: 25px 10px 0px 20px;
+        height: 710px;
+        margin-left: 20px;
+        -webkit-box-sizing: border-box;
+        box-sizing: border-box;
+
+        .configure_page {
+            .delete_btn {
+                text-align: right;
+                margin-bottom: 15px;
+            }
+
+            .menu_content {
+                margin-top: 20px;
+            }
+
+            .configur_content {
+                margin-top: 20px;
+            }
+
+            .blue {
+                color: #29b6f6;
+                margin-top: 10px;
+            }
+
+            .applet {
+                margin-bottom: 20px;
+
+                span {
+                    margin-right: 18px;
+                }
+            }
+
+            .material {
+                .input_width {
+                    width: 30%;
+                }
+
+                .el-textarea {
+                    width: 80%;
+                }
+            }
+        }
+    }
+}

@@ -1,4 +1,4 @@
-import { login, logout, getInfo } from '@/api/user'
+import { login, logout, getInfo, person, permmenu } from '@/api/user'
 import { getToken, setToken, removeToken } from '@/utils/auth'
 import router, { resetRouter } from '@/router';
 
@@ -7,9 +7,25 @@ const state = {
     name: '',
     avatar: '',
     introduction: '',
-    roles: []
+    roles: [],
+    roleArray: '',
+    userInfo: {},
+    tokenInfo: {},
+    refreshToken: '',
 }
 const mutations = {
+    SET_ROLE_ARRAY: (state, roleName) => {
+        state.roleName = roleName
+    },
+    SET_REFRESH_TOKEN: (state, refreshToken) => {
+        state.refreshToken = refreshToken
+    },
+    SET_TOKEN_INFO: (state, tokenInfo) => {
+        state.tokenInfo = tokenInfo
+    },
+    SET_USER_INFO: (state, userInfo) => {
+        state.userInfo = userInfo
+    },
     SET_TOKEN: (state, token) => {
         state.token = token
     },
@@ -29,14 +45,15 @@ const mutations = {
 const actions = {
     // user login
     login({ commit }, userInfo) {
-
         const { username, password } = userInfo
         return new Promise((resolve, reject) => {
-            login({ username: username.trim(), password: password }).then(response => {
-                const { data } = response;
-                commit('SET_TOKEN', data.token)
-                setToken(data.token)
-                resolve(data)
+            login(Object.assign({}, userInfo, { username: username.trim(), password: password })).then(response => {
+                const { token, refreshToken, role } = response;
+                commit('SET_TOKEN', token);
+                commit('SET_REFRESH_TOKEN', refreshToken);
+                commit('SET_TOKEN_INFO', response);
+                setToken(token)
+                resolve(response)
             }).catch(error => {
                 reject(error)
             })
@@ -45,23 +62,28 @@ const actions = {
 
     getInfo({ dispatch, commit, state }) {
         return new Promise((resolve, reject) => {
-            getInfo(state.token).then(response => {
-                const { data } = response
-                if (!data) {
+            
+            getInfo().then(response => {
+                const { permmenu, person, info } = response
+                if (!permmenu && !person) {
                     reject('验证失败，请重新登录。');
                     dispatch('user/logout')
                 }
-                const { roles, name, avatar, introduction } = data
+                const { perms, menus } = permmenu;
+                const { name, headImg, remark } = person
+                const roles = info.label;
+                
+                commit('SET_ROLES', roles);
 
-                if (!roles || roles.length <= 0) {
+                if (!perms || perms.length <= 0) {
                     reject("权限不能为空！")
                 }
-
-                commit('SET_ROLES', roles)
+                commit('SET_USER_INFO', person)
+                commit('SET_ROLE_ARRAY', perms)
                 commit('SET_NAME', name)
-                commit('SET_AVATAR', avatar)
-                commit('SET_INTRODUCTION', introduction)
-                resolve(data)
+                commit('SET_AVATAR', headImg)
+                commit('SET_INTRODUCTION', remark)
+                resolve({perms, menus, roles})
             }).catch(error => {
                 reject(error)
             })
@@ -72,8 +94,10 @@ const actions = {
     logout({ commit, state, dispatch }) {
         return new Promise((resolve, reject) => {
             logout(state.token).then(() => {
+                commit('SET_USER_INFO', {})
                 commit('SET_TOKEN', '')
                 commit('SET_ROLES', [])
+                commit('SET_TOKEN_INFO', {});
                 removeToken()
                 resetRouter()
 

@@ -4,7 +4,8 @@ import store from '@/store';
 import { getToken } from '@/utils/auth';
 
 const service = axios.create({
-    // baseURL: 'https://bookbook.cc/api/shopping-system-v3',
+    // baseURL: 'https://wulingshan.loca.lt/',
+    // baseURL: 'http://127.0.0.1:8001',
     baseURL: process.env.VUE_APP_BASE_API,
     timeout: 60000,
     // withCredentials: true, // 是否发送cookies
@@ -29,14 +30,14 @@ service.interceptors.request.use(
 service.interceptors.response.use(
     response => {
         const res = response.data;
-        if (res.status !== 200) {
+        if (res.code !== 1000) {
             Message({
                 message: res.message || 'Error',
                 type: 'error',
                 duration: 5 * 1000
             })
 
-            if (res.status === 508 || res.status === 512 || res.status === 514) { //假如设定登录信息失效
+            if (res.code === 508 || res.code === 512 || res.code === 1001) { //假如设定登录信息失效
                 MessageBox.confirm('登录信息已失效，请重新登录！', {
                     confirmButtonText: '登 录',
                     cancelButtonText: '关 闭',
@@ -49,7 +50,7 @@ service.interceptors.response.use(
             }
             return Promise.reject(new Error(res.message || 'Error'))
         } else {
-            return res
+            return res.data
         }
     },
     error => {
