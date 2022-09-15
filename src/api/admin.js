@@ -18,19 +18,19 @@ export default {
             }, options)
             return request(op)
         },
-        stop(params, options = {}) {
+        stop(data, options = {}) {
             const op = Object.assign({}, {
                 url: '/admin/task/info/stop',
                 method: 'post',
                 data,
-            }, params)
+            }, options)
             return request(op)
         },
-        log(data, options = {}) {
+        log(params, options = {}) {
             const op = Object.assign({}, {
                 url: '/admin/task/info/log',
                 method: 'get',
-                data,
+                params,
             }, options)
             return request(op)
         },

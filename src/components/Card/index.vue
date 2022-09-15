@@ -1,13 +1,13 @@
 <template>
   <div class="Card">
-    <el-card class="box-card">
-      <div v-if="header" slot="header" class="clearfix">
-        <span>
+    <el-card class="box-card" :body-style="bodyStyle">
+      <span v-if="header" slot="header" class="clearfix">
+        <span class="name">
           <svg-icon v-if="icon" :icon-class="icon" class-name="card-panel-icon" />
           {{ name }}
         </span>
         <slot name="btn"></slot>
-      </div>
+      </span>
       <slot></slot>
     </el-card>
   </div>
@@ -20,6 +20,7 @@ export default {
     name: mimi.vue.getPropString(),
     icon: mimi.vue.getPropString(),
     header: mimi.vue.getPropBoolean(true),
+    bodyStyle: mimi.vue.getPropObject(),
   },
   data() {
     return {};
@@ -31,6 +32,24 @@ export default {
 </script>
 
 <style scoped lang="scss">
-.Card {
+:deep.Card {
+  height: 100%;
+
+  .name {
+    line-height: 40px;
+  }
+
+  .clearfix:before,
+  .clearfix:after {
+    display: table;
+    content: "";
+  }
+  .clearfix:after {
+    clear: both;
+  }
+
+  .el-card__header {
+    padding: 6px 20px;
+  }
 }
 </style>
