@@ -19,6 +19,20 @@ export default {
             pageSizes: [5, 10, 20, 30],
             pagerCount: 5,
             hasPage: true,
+            buttons: [
+                {
+                    type: '',
+                    onClick: this.handleEdit,
+                    size: 'mini',
+                    name: '编辑'
+                },
+                {
+                    type: 'danger',
+                    onClick: this.handleDelete,
+                    size: 'mini',
+                    name: '删除'
+                }
+            ],
             defaultFiledButton: [{
                 label: '操作',
                 render: (h, scope) => {
@@ -43,12 +57,38 @@ export default {
         }
     },
     created() {
-        console.log(this.$options.name)
+        console.log(this.$options.name, this.buttons)
     },
     async mounted() {
         await this.init();
     },
     methods: {
+        defaultFiledButtonMethods(button = [], options = {}) {
+            button = [...this.buttons, ...button ];
+            const defaultOptions = {
+                label: '操作',
+                fixed: '',
+                minWidth: '',
+                render: Function
+            }
+            
+            defaultOptions.render = (h, scope)=> {
+                return (
+                    <div style="">
+                        {
+                            button.map(item => {
+                                return (
+                                    <el-button type={item.type} onClick={()=>item.onClick(scope.$index, scope.row)} size={item.size}>{item.name}</el-button>
+                                )
+                            })
+                        }    
+                    </div>
+                )
+            }
+            const btn =  [Object.assign({}, defaultOptions, options)]
+            console.log(btn)
+            return btn                
+        },
         async init() {
             let res = await this.api.list(this.pagination);
             if (res) {
@@ -66,6 +106,7 @@ export default {
             await this.init();
         },
         handleEdit(index, row) {
+            console.log(index, row)
             this.visible.show = true;
             this.formValue = row
         },
@@ -73,6 +114,7 @@ export default {
         async handleCurrentChange(value) {
             this.pagination.page = value
             await this.init();
-         },
+        },
+        handleMethods(methods, index, row) { },
     },
 }

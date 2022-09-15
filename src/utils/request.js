@@ -37,7 +37,7 @@ service.interceptors.response.use(
                 duration: 5 * 1000
             })
 
-            if (res.code === 508 || res.code === 512 || res.code === 1001) { //假如设定登录信息失效
+            if (res.code === 508 || res.code === 512 || res.code === 401) { //假如设定登录信息失效
                 MessageBox.confirm('登录信息已失效，请重新登录！', {
                     confirmButtonText: '登 录',
                     cancelButtonText: '关 闭',

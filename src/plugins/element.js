@@ -1,4 +1,3 @@
-
 import {
     Button,
     Form,
@@ -52,9 +51,10 @@ import {
     Radio,
     RadioButton,
     RadioGroup,
-    Image
-} from 'element-ui'
-
+    Image,
+    DatePicker,
+    TimePicker
+} from 'element-ui';
 const components = [
     Image,
     RadioButton,
@@ -103,8 +103,33 @@ const components = [
     ColorPicker,
     Scrollbar,
     Progress,
-    Badge
+    Badge,
+    DatePicker,
+    TimePicker,
 ]
+
+function RepairProps(cmp) {
+    (cmp || []).forEach(mixin => {
+        if (mixin.props && mixin.props.placement) {
+            const defaultValue = mixin.props.placement.default
+            mixin.data = new Proxy(mixin.data, {
+                apply(target, thisArg, argArray) {
+                    const res = Reflect.apply(target, thisArg, argArray)
+                    return {
+                        ...(res || {}),
+                        placement: defaultValue
+                    }
+                }
+            })
+            delete mixin.props.placement
+        }
+        if (mixin.mixins && mixin.mixins.length > 0) {
+            RepairProps(mixin)
+        }
+    })
+}
+
+RepairProps(DatePicker.mixins[0].mixins)
 
 const install = function(Vue, opts = {}) {
     Vue.prototype.$ELEMENT = {
@@ -132,6 +157,8 @@ const install = function(Vue, opts = {}) {
 }
 
 
+// RepairProps(TimePicker)
+// console.log(DatePicker.mixins)
 
 
 export default install

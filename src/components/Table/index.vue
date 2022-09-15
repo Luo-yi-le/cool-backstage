@@ -4,6 +4,9 @@
       ref="elTable"
       v-bind="$attrs"
       v-on="$listeners"
+      border
+      fit
+      stripe
       :data="data"
       :span-method="this.merge ? this.mergeMethod : this.spanMethod"
     >

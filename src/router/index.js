@@ -4,6 +4,7 @@ Vue.use(VueRouter)
 import userRouter from './modules/user';
 import systemRouter from './modules/system';
 import wechatRouter from './modules/wechat';
+import taskRouter from './modules/task';
 
 import LogRouter from './modules/log';
 import Layout from '@/views/layout';
@@ -55,6 +56,7 @@ export const asyncRoutes = [
     ...systemRouter,
     ...wechatRouter,
     ...LogRouter, 
+    ...taskRouter,
     { path: '*', redirect: '/404', hidden: true },
 ]
 

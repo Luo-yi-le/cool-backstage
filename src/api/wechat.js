@@ -20,5 +20,9 @@ export default {
     getMessageList(data, options = {}) {
         const op = Object.assign({}, { url: '/app/wechat/message/list', method: 'post', data, }, options)
         return request(op)
+    },
+    loadConfigData(data, options = {}) {
+        const op = Object.assign({}, { url: '/interaction/loadConfigData', method: 'get', params: data, }, options)
+        return request(op)
     }
 }
