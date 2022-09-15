@@ -6,12 +6,11 @@
 </template>
 
 <script>
-
 export default {
-  name: 'app',
-}
+  name: "app",
+};
 </script>
 
-<style>
-
+<style lang="scss">
+@import url("./assets/style/index.scss");
 </style>

@@ -1,99 +1,93 @@
 <template>
-  <div class="view-task">
-    <el-scrollbar>
-      <div class="box scroller1">
-        <!-- 系统，用户自定义，已停止 -->
-        <div
-          class="block"
-          v-for="(item, index) in list"
-          :key="index"
-          :class="[`_${item.key}`]"
-        >
-          <div class="header">
-            <!-- 图标 -->
-            <i class="icon" :class="item.icon"></i>
-            <!-- 标题 -->
-            <span class="label">{{ item.label }}</span>
-            <!-- 数量 -->
-            <span class="num">(11)</span>
-            <span class="flex1"></span>
-            <!-- 操作按钮 -->
-            <ul class="op-btn">
-              <li class="refresh-btn">
-                <i class="el-icon-refresh"></i>
-                <span>刷新</span>
-              </li>
+  <div class="system-task">
+    <div class="box scroller1">
+      <!-- 系统，用户自定义，已停止 -->
+      <div
+        class="block"
+        v-for="(item, index) in list"
+        :key="index"
+        :class="[`_${item.key}`]"
+      >
+        <div class="header">
+          <!-- 图标 -->
+          <i class="icon" :class="item.icon"></i>
+          <!-- 标题 -->
+          <span class="label">{{ item.label }}</span>
+          <!-- 数量 -->
+          <span class="num">(11)</span>
+          <span class="flex1"></span>
+          <!-- 操作按钮 -->
+          <ul class="op-btn">
+            <li class="refresh-btn">
+              <i class="el-icon-refresh"></i>
+              <span>刷新</span>
+            </li>
 
-              <li class="add-btn">
-                <i class="el-icon-circle-plus-outline"></i>
-                <span>添加</span>
-              </li>
-            </ul>
-          </div>
-
-          <div class="container scroller1"></div>
-
-          <div class="footer">
-            <button class="btn-add">
+            <li class="add-btn">
               <i class="el-icon-plus"></i>
-            </button>
-          </div>
+              <span>添加</span>
+            </li>
+          </ul>
         </div>
 
-        <!-- 日志 -->
-        <div class="block _log">
-          <div class="header">
-            <!-- 标题 -->
-            <span class="label">日志</span>
-            <!-- 数量 -->
-            <span class="num">({{ logs.pagination.total }})</span>
-            <span class="flex1"></span>
-            <!-- 是否异常 -->
-            <el-checkbox-group v-model="logs.status" class="status">
-              <el-checkbox :label="0">异常</el-checkbox>
-            </el-checkbox-group>
+        <div class="container scroller1"></div>
 
-            <!-- 操作按钮 -->
-            <ul class="op-btn">
-              <li class="refresh-btn">
-                <i class="el-icon-refresh"></i>
-                <span>刷新</span>
-              </li>
-            </ul>
-          </div>
-
-          <div
-            v-loading="logs.loading"
-            class="container"
-            element-loading-text="拼命加载中"
-          >
-            <ul
-              class="scroller1"
-              :infinite-scroll-disabled="logs.list.length == logs.pagination.total"
-            >
-              <li
-                v-for="(item, index) in logs.list"
-                :key="index"
-                :class="{ _error: item.status == 0 }"
-              >
-                <div class="h">
-                  <span class="name">{{ Number(index) + 1 }} · {{ item.taskName }}</span>
-                </div>
-
-                <div class="remark" :class="{ _ellipsis: !item._expand }">
-                  {{ item.detail || "..." }}
-                </div>
-
-                <div class="f">
-                  <span>执行时间：{{ item.createTime }}</span>
-                </div>
-              </li>
-              <div class="empty" v-if="logs.list.length == 0">暂无数据</div>
-            </ul>
-          </div>
+        <div class="footer">
+          <button class="btn-add">
+            <i class="el-icon-plus"></i>
+          </button>
         </div>
       </div>
-    </el-scrollbar>
+
+      <!-- 日志 -->
+      <div class="block _log">
+        <div class="header">
+          <!-- 标题 -->
+          <span class="label">日志</span>
+          <!-- 数量 -->
+          <span class="num">({{ logs.pagination.total }})</span>
+          <span class="flex1"></span>
+          <!-- 是否异常 -->
+          <el-checkbox-group v-model="logs.status" class="status">
+            <el-checkbox :label="0">异常</el-checkbox>
+          </el-checkbox-group>
+
+          <!-- 操作按钮 -->
+          <ul class="op-btn">
+            <li class="refresh-btn">
+              <i class="el-icon-refresh"></i>
+              <span>刷新</span>
+            </li>
+          </ul>
+        </div>
+
+        <div v-loading="logs.loading" class="container" element-loading-text="拼命加载中">
+          <ul
+            class="scroller1"
+            :infinite-scroll-disabled="logs.list.length == logs.pagination.total"
+          >
+            <li
+              v-for="(item, index) in logs.list"
+              :key="index"
+              :class="{ _error: item.status == 0 }"
+            >
+              <div class="h">
+                <span class="name">{{ Number(index) + 1 }} · {{ item.taskName }}</span>
+              </div>
+
+              <div class="remark" :class="{ _ellipsis: !item._expand }">
+                {{ item.detail || "..." }}
+              </div>
+
+              <div class="f">
+                <span>执行时间：{{ item.createTime }}</span>
+              </div>
+            </li>
+            <div class="empty" v-if="logs.list.length == 0">暂无数据</div>
+          </ul>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -152,32 +146,14 @@ export default {
   position: relative;
   z-index: 9;
 }
-.view-task {
-  height: 100%;
+.system-task {
   .box {
     display: flex;
     height: 100%;
-  }
-
-  *::-webkit-scrollbar-thumb {
-    background: transparent;
-  }
-
-  .scroller1::-webkit-scrollbar-thumb {
-    background: transparent;
-  }
-
-  .scroller1::-webkit-scrollbar-thumb {
-    background-color: #9093994d;
-    border-radius: 6px;
-  }
-
-  *::-webkit-scrollbar-thumb {
-    background-color: #9093994d;
-    border-radius: 6px;
+    overflow-x: auto;
   }
   .block {
-    height: calc(100% - 10px);
+    height: 100%;
     width: 400px;
     margin-right: 10px;
     flex-shrink: 0;
@@ -206,10 +182,6 @@ export default {
       .num {
         font-size: 12px;
       }
-      .label,
-      .num {
-        color: #000;
-      }
       .flex1 {
         flex: 1;
       }
@@ -220,14 +192,13 @@ export default {
           align-items: center;
           list-style: none;
           cursor: pointer;
-          height: 25px;
-          padding: 0 10px;
+          padding: 2px 10px;
           background-color: #fff;
-          border-radius: 5px;
+          border-radius: 3px;
           margin-left: 5px;
           &:hover {
-            background-color: var(--color-primary);
-            color: #fff;
+            background-color: #dedede;
+            color: #444;
           }
           i {
             font-size: 13px;
@@ -304,7 +275,7 @@ export default {
                 position: absolute;
                 left: 0;
                 top: 1px;
-                color: var(--color-primary);
+                color: #222;
               }
             }
             .start,
@@ -374,10 +345,9 @@ export default {
       .empty {
         text-align: center;
         font-size: 13px;
-        padding: 20px;
-        border: 1px solid #f7f7f7;
-        border-radius: 5px;
+        color: #666;
         background-color: #fff;
+        padding: 20px;
       }
       .more {
         display: block;
@@ -427,6 +397,7 @@ export default {
         li {
           display: flex;
           align-items: center;
+          height: 20px;
           &._current-log {
             span {
               display: block;
@@ -447,8 +418,8 @@ export default {
       }
     }
     .container {
-      height: calc(100vh - 160px);
-      max-height: calc(100vh - 160px);
+      height: calc(100% - 50px);
+      max-height: calc(100% - 50px);
       ul {
         height: 100%;
         li {
@@ -467,27 +438,12 @@ export default {
           }
           &:hover {
             .remark {
-              color: var(--color-primary);
+              color: #444;
             }
           }
         }
       }
     }
-  }
-  .scroller1::-webkit-scrollbar-thumb {
-    background-color: #9093994d;
-    border-radius: 6px;
-  }
-  *::-webkit-scrollbar-thumb {
-    background-color: #9093994d;
-  }
-
-  .scroller1::-webkit-scrollbar-track {
-    background: transparent;
-  }
-
-  *::-webkit-scrollbar-track {
-    background: transparent;
   }
 }
 </style>
