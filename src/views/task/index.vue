@@ -2,7 +2,12 @@
   <div class="system-task">
     <div class="box scroller1">
       <!-- 系统，用户自定义，已停止 -->
-      <div class="block" v-for="(item, index) in list" :key="index" :class="[`_${item.key}`]">
+      <div
+        class="block"
+        v-for="(item, index) in list"
+        :key="index"
+        :class="[`_${item.key}`]"
+      >
         <div class="header">
           <!-- 图标 -->
           <i class="icon" :class="item.icon"></i>
@@ -25,68 +30,81 @@
           </ul>
         </div>
 
-        <div class="container scroller1" :ref="`${item.key}-scroller`">
-          <draggable v-model="list[index].list" tag="ul" item-key="id" v-bind="dragOptions()" :move="onDragEnd"
-            @start="isDragging=true" @end="isDragging=false" :data-type="item.params.type"
-            :data-status="item.params.status">
-            <transition-group type="transition" :name="item.key">
-              <li v-for="element in list[index].list" :key="element.id" :data-id="element.id" class="_drag"
-                @contextmenu.stop.prevent="openCM($event, element)">
-                <div class="h">
-                  <span v-show="element.status === 0" class="type _warning">
-                    {{ element.type === 0 ? "系统" : "用户" }}
-                  </span>
-                  <span class="name">{{ element.name }}</span>
+        <div
+          class="container scroller1"
+          :ref="`${item.key}-scroller`"
+          :key="Math.random() + index"
+        >
+          <draggable
+            v-model="list[index].list"
+            v-bind="drag"
+            item-key="id"
+            draggabl=".item"
+            tag="ul"
+            :data-type="item.params.type"
+            :data-status="item.params.status"
+            :move="changeMove"
+          >
+            <!-- :data-status="item.params.status"
+            :data-type="item.params.type" -->
+
+            <li
+              v-for="element in list[index].list"
+              :key="element.id"
+              :data-id="element.id"
+              class="_drag"
+              @contextmenu.stop.prevent="openCM($event, element)"
+            >
+              <div class="h">
+                <span v-show="element.status === 0" class="type _warning">
+                  {{ element.type === 0 ? "系统" : "用户" }}
+                </span>
+                <span class="name">{{ element.name }}</span>
+              </div>
+
+              <div class="remark">{{ element.remark }}</div>
+
+              <div class="f">
+                <template v-if="element.status">
+                  <span class="date"> {{ element.nextRunTime || "..." }}</span>
+                  <span class="start">进行中</span>
+                </template>
+
+                <template v-else>
+                  <span>...</span>
+                  <span class="stop">已停止</span>
+                </template>
+              </div>
+
+              <div class="op">
+                <div v-if="element.status === 0" class="op-item" @click="start(element)">
+                  <i class="el-icon-plus-video-play"></i>
+                  <span>开始</span>
                 </div>
 
-                <div class="remark">{{ element.remark }}</div>
-
-                <div class="f">
-                  <template v-if="element.status">
-                    <span class="date"> {{ element.nextRunTime || "..." }}</span>
-                    <span class="start">进行中</span>
-                  </template>
-
-                  <template v-else>
-                    <span>...</span>
-                    <span class="stop">已停止</span>
-                  </template>
+                <div v-else class="op-item" @click="stop(element)">
+                  <i class="el-icon-plus-video-pause"></i>
+                  <span>暂停</span>
                 </div>
 
-
-                <div class="op">
-                  <div v-if="element.status === 0" class="op-item">
-                    <i class="el-icon-plus-video-play"></i>
-                    <span>开始</span>
-                  </div>
-
-                  <div v-else class="op-item">
-                    <i class="el-icon-plus-video-pause"></i>
-                    <span>暂停</span>
-                  </div>
-
-                  <div class="op-item">
-                    <i class="el-icon-edit-pen"></i>
-                    <span>编辑</span>
-                  </div>
-
-                  <div class="op-item" @click="findLog(element)">
-                    <i class="el-icon-tickets"></i>
-                    <span>查看日志</span>
-                  </div>
+                <div class="op-item" @click="edit(element)">
+                  <i class="el-icon-edit-pen"></i>
+                  <span>编辑</span>
                 </div>
 
-              </li>
-            </transition-group>
+                <div class="op-item" @click="findLog(element)">
+                  <i class="el-icon-tickets"></i>
+                  <span>查看日志</span>
+                </div>
+              </div>
+            </li>
             <template #header>
-              <div v-if="list[index].list.length == 0" class="empty">
+              <div slot="header" v-if="list[index].list.length == 0" class="empty">
                 暂无数据
               </div>
             </template>
-
           </draggable>
         </div>
-
         <div class="footer">
           <button class="btn-add">
             <i class="el-icon-plus"></i>
@@ -103,7 +121,11 @@
           <span class="num">({{ logs.pagination.total }})</span>
           <span class="flex1"></span>
           <!-- 是否异常 -->
-          <el-checkbox-group v-model="logs.filters.status" class="status">
+          <el-checkbox-group
+            v-model="logs.filters.status"
+            class="status"
+            @change="filterLog"
+          >
             <el-checkbox :label="0">异常</el-checkbox>
           </el-checkbox-group>
 
@@ -122,9 +144,17 @@
         </div>
 
         <div v-loading="logs.loading" class="container" element-loading-text="拼命加载中">
-          <ul ref="log-scroller" class="scroller1" :infinite-scroll-disabled="logs.list.length == logs.pagination.total"
-							v-infinite-scroll="moreLog">
-            <li v-for="(item, index) in logs.list" :key="index" :class="{ _error: item.status == 0 }">
+          <ul
+            ref="log-scroller"
+            class="scroller1"
+            :infinite-scroll-disabled="logs.list.length == logs.pagination.total"
+            v-infinite-scroll="moreLog"
+          >
+            <li
+              v-for="(item, index) in logs.list"
+              :key="index"
+              :class="{ _error: item.status == 0 }"
+            >
               <div class="h">
                 <span class="name">{{ Number(index) + 1 }} · {{ item.taskName }}</span>
               </div>
@@ -142,6 +172,15 @@
         </div>
       </div>
     </div>
+
+    <context-menu
+      ref="menu"
+      :target="contextMenuTarget"
+      :list="contextMenuList"
+      :show="contextMenuVisible"
+      @update:show="contextMenuVisible = $event"
+    >
+    </context-menu>
   </div>
 </template>
 
@@ -150,21 +189,23 @@ import MimiForm from "@/components/Form";
 
 import { column } from "./filed.js";
 import defaultMixins from "@/mixins/defaultMixins";
-import draggable from "vuedraggable/src/vuedraggable";
 // import { ContextMenu } from '@cool-vue/crud'
 export default {
   mixins: [defaultMixins],
-  name: 'Task',
+  name: "Task",
   data() {
     return {
+      contextMenuList: [],
+      contextMenuTarget: null,
+      contextMenuVisible: false,
       drag: {
         options: {
+          handle: "._drag",
+          animation: 150,
           group: "Task",
-          animation: 300,
-          ghostClass: "Ghost",
-          dragClass: "Drag",
-          draggable: "._drag"
-        }
+          ghostClass: "ghost",
+          sort: false,
+        },
       },
       list: [
         {
@@ -175,13 +216,13 @@ export default {
           loading: false,
           params: {
             type: 0,
-            status: 1
+            status: 1,
           },
           pagination: {
             size: 10,
             page: 1,
-            total: 0
-          }
+            total: 0,
+          },
         },
         {
           key: "user",
@@ -191,13 +232,13 @@ export default {
           loading: false,
           params: {
             type: 1,
-            status: 1
+            status: 1,
           },
           pagination: {
             size: 10,
             page: 1,
-            total: 0
-          }
+            total: 0,
+          },
         },
         {
           key: "stop",
@@ -206,13 +247,13 @@ export default {
           loading: false,
           params: {
             type: null,
-            status: 0
+            status: 0,
           },
           pagination: {
             size: 10,
             page: 1,
-            total: 0
-          }
+            total: 0,
+          },
         },
       ],
       logs: {
@@ -220,61 +261,31 @@ export default {
         list: [],
         pagination: {
           size: 10,
-          page: 1
+          page: 1,
         },
         params: {},
         filters: {
-          status: []
+          status: [],
         },
         current: null,
-
       },
-      isDragging: false,
-      delayedDragging: false,
     };
   },
-  computed: {
-    dragOptions1() {
-      return {
-        animation: 0,
-        group: "description",
-        disabled: false,
-        ghostClass: "ghost"
-      }
-    }
-  },
-  watch: {
-    isDragging(newValue) {
-      if (newValue) {
-        this.delayedDragging = true;
-        return;
-      }
-      this.$nextTick(() => {
-        this.delayedDragging = false;
-      });
-    }
-  },
+  computed: {},
+  watch: {},
   mounted() {
-    // this.getTaskLog();
-    this.refreshTask({ page: 1 })
+    this.refreshTask({ page: 1 });
   },
   methods: {
-    dragOptions() {
-      return {
-        animation: 0,
-        group: "description",
-        // disabled: false,
-        ghostClass: "ghost"
-      }
-    },
     async refreshTask(params, options) {
       const { index, more } = options || {};
-      const arr = index === undefined || index === null ? this.list.map((e, i) => i) : [index];
+      const arr =
+        index === undefined || index === null ? this.list.map((e, i) => i) : [index];
       arr.forEach(async (k) => {
         const item = this.list[k];
         Object.assign(item.params, {
           ...item.pagination,
-          ...params
+          ...params,
         });
         item.loading = true;
         const res = await this.$api.task.page(item.params);
@@ -287,7 +298,6 @@ export default {
         //     behavior: "smooth"
         //   });
         // }
-
       });
     },
     async getTaskLog() {
@@ -321,7 +331,6 @@ export default {
       return page != 1;
     },
 
-
     // 刷新日志
     async refreshLog(newParams, options) {
       if (this.logs.loading) {
@@ -331,7 +340,7 @@ export default {
       const { more } = options || {};
       Object.assign(params, {
         ...pagination,
-        ...newParams
+        ...newParams,
       });
       this.logs.loading = true;
       const res = await this.$api.task.log(params);
@@ -366,62 +375,64 @@ export default {
 
     // 右键菜单
     openCM(e, { id, status, type, name }) {
-      console.log(e)
+      const __this = this;
+      e.preventDefault();
+      __this.$refs.menu.contextMenuHandler(e);
       const menus = [
         {
           label: "立即执行",
-          perm: ["once"],
+          icon: "el-icon-video-play",
           callback(done) {
-            this.once({ id });
+            __this.once({ id });
             done();
-          }
+          },
         },
         {
           label: "编辑",
-          perm: ["update", "info"],
+          icon: "el-icon-edit",
           callback(done) {
-            this.edit({ id, type });
+            __this.edit({ id, type });
             done();
-          }
+          },
         },
         {
           label: "删除",
-          perm: ["delete"],
+          icon: "el-icon-delete",
           callback(done) {
-            this.remove({ id });
+            __this.remove({ id });
             done();
-          }
+          },
         },
         {
           label: "查看日志",
-          perm: ["log"],
+          icon: "el-icon-tickets",
           callback(done) {
-            this.findLog({ id, name });
+            __this.findLog({ id, name });
             done();
-          }
-        }
+          },
+        },
       ];
 
       if (status == 1) {
         menus.splice(1, 0, {
           label: "暂停",
-          perm: ["stop"],
+          icon: "el-icon-video-pause",
           callback(done) {
-            stop({ id, type });
+            __this.stop({ id, type });
             done();
-          }
+          },
         });
       } else {
         menus.splice(1, 0, {
           label: "开始",
-          perm: ["start"],
+          icon: "el-icon-video-play",
           callback(done) {
-            start({ id, type });
+            __this.start({ id, type });
             done();
-          }
+          },
         });
       }
-
+      __this.contextMenuList = menus;
       return false;
     },
     async edit(params) {
@@ -430,7 +441,7 @@ export default {
         type,
         service: "",
         name: "",
-        cron: ""
+        cron: "",
       };
       if (id) {
         info = await his.$api.task.info({ id });
@@ -445,7 +456,7 @@ export default {
     // 删除任务
     remove({ id }) {
       this.$confirm("此操作将永久删除该任务，是否继续？", "提示", {
-        type: "warning"
+        type: "warning",
       })
         .then(() => {
           this.$api.task.delete({ ids: [id] }).then(() => {
@@ -487,17 +498,13 @@ export default {
           this.$message.error(err.message);
         });
     },
-
+    changeMove(event, originalEvent) {
+      const { draggedContext, dragged, to, from } = event;
+      this.onDragEnd({ to: to, item: dragged });
+      return true;
+    },
     // 任务拖动
-    onDragEnd({ relatedContext, draggedContext, to, item }) {
-      const relatedElement = relatedContext.element;
-      const draggedElement = draggedContext.element;
-      return (
-        (!relatedElement || !relatedElement.fixed) && !draggedElement.fixed
-      );
-      console.log(to, item)
-      // const relatedElement = relatedContext.element;
-      // const draggedElement = draggedContext.element;
+    onDragEnd({ to, item }, data) {
       const status = to.getAttribute("data-status");
       const type = to.getAttribute("data-type");
       const id = item.getAttribute("data-id");
@@ -512,11 +519,12 @@ export default {
     // 更多任务
     moreTask(index) {
       this.refreshTask(null, { index, more: true });
-    }
+    },
   },
   components: {
-    draggable
-  }
+    draggable: () => import("vuedraggable"),
+    ContextMenu: () => import("@/components/ContextMenu"),
+  },
 };
 </script>
 

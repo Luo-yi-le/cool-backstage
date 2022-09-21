@@ -50,6 +50,14 @@ export default {
             }, options)
             return request(op)
         },
+        start(data, options = {}) {
+            const op = Object.assign({}, {
+                url: '/admin/task/info/start',
+                method: 'post',
+                data,
+            }, options)
+            return request(op)
+        },
         add(data, options = {}) {
             const op = Object.assign({}, {
                 url: '/admin/task/info/add',

@@ -54,11 +54,17 @@ service.interceptors.response.use(
         }
     },
     error => {
-        Message({
-            message: error.message,
-            type: 'error',
-            duration: 5 * 1000
-        })
+        if (error.code === 508 || error.code === 512 || error.code === 401) { //假如设定登录信息失效
+            MessageBox.confirm('登录信息已失效，请重新登录！', {
+                confirmButtonText: '登 录',
+                cancelButtonText: '关 闭',
+                type: 'warning'
+            }).then(() => {
+                store.dispatch('user/resetToken').then(() => {
+                    location.reload()
+                })
+            })
+        }
         return Promise.reject(error)
     }
 )
