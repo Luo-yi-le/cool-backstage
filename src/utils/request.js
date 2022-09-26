@@ -2,7 +2,7 @@ import axios from 'axios'
 import { MessageBox, Message } from 'element-ui'
 import store from '@/store';
 import { getToken } from '@/utils/auth';
-
+import NProgress from 'nprogress'
 const service = axios.create({
     // baseURL: 'https://wulingshan.loca.lt/',
     // baseURL: 'http://127.0.0.1:8001',
@@ -13,6 +13,7 @@ const service = axios.create({
 
 service.interceptors.request.use(
     config => {
+        NProgress.start()
         if (store.getters.token) {
             config.headers['Authorization'] = getToken()
         }
@@ -29,6 +30,7 @@ service.interceptors.request.use(
 
 service.interceptors.response.use(
     response => {
+        NProgress.done()
         const res = response.data;
         if (res.code !== 1000) {
             Message({
@@ -54,6 +56,7 @@ service.interceptors.response.use(
         }
     },
     error => {
+        NProgress.done()
         if (error.code === 508 || error.code === 512 || error.code === 401) { //假如设定登录信息失效
             MessageBox.confirm('登录信息已失效，请重新登录！', {
                 confirmButtonText: '登 录',

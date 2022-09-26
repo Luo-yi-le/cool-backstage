@@ -137,6 +137,7 @@ const install = function(Vue, opts = {}) {
         zIndex: opts.zIndex || 2000
     };
     Vue.use(InfiniteScroll);
+    
     Vue.use(Loading.directive);
     components.forEach(component => {
         Vue.component(component.name, component)

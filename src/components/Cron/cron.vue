@@ -432,13 +432,13 @@ import Language from "./cn";
 export default {
   name: "vue-cron",
   props: {
-    modelValue: {
+    value: {
       type: String,
       default: "",
     },
     showYear: Boolean,
   },
-  emits: ["update:modelValue", "change", "close"],
+  emits: ["update:value", "change", "close"],
   data() {
     return {
       second: {
@@ -703,13 +703,13 @@ export default {
     },
   },
   watch: {
-    data() {
+    value() {
       this.rest(this.$data);
     },
   },
   methods: {
     save() {
-      this.$emit("update:modelValue", this.cron);
+      this.$emit("update:value", this.cron);
       this.$emit("change", this.cron);
       this.close();
     },

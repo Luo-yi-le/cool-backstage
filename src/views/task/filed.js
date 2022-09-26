@@ -1,4 +1,5 @@
-export const column = [{
+
+export const column = (__this) => [{
         label: '序号',
         type: 'selection',
         disabled: true
@@ -17,6 +18,30 @@ export const column = [{
         componentName: 'el-date-picker',
         component: mimi.fileds('createTime', { type: 'datetime', disabled: true }),
     },
+    {
+        prop: 'taskType',
+        label: '执行类型',
+        type: 'text',
+        componentName: 'el-select',
+        component: mimi.fileds('taskType', {
+            options: [{
+                label: "cron",
+                value: 0
+            }, {
+                label: "时间间隔",
+                value: 1
+            }],
+            hidden: ({ scope }) => {
+                console.log(scope)
+            },
+            listeners: {
+                
+                change: __this.handlerBusChange
+                // ($event,)=>console.log($event)
+            }
+        }),
+    },
+    
     {
         prop: 'nextRunTime',
         label: '下次执行时间',
@@ -59,8 +84,11 @@ export const column = [{
         prop: 'cron',
         label: '执行时间表达式',
         type: 'text',
-        componentName: 'el-input',
-        component: mimi.fileds('cron'),
+        slotName: 'slot-cron',
+        component: mimi.fileds('cron', {
+            name: 'slot-cron',
+            listeners:{}
+        }),
     },
     {
         prop: 'repeatConf',
@@ -95,6 +123,4 @@ export const column = [{
             }]
         }),
     },
-
-
 ]

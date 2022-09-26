@@ -7,7 +7,15 @@ export default {
     mounted() { 
         this._eventBusMixinsInit()
     },
+    beforeDestroy(){
+        mimi.bus.$off('_handlerBusInput');
+        mimi.bus.$off('_handlerBusChange')
+        mimi.bus.$off('_handlerBusClear')
+    },
     methods: {
+        GET_BUS_DATA(){
+            return this.BUS_DATA
+        },
         _eventBusMixinsInit() {
             this._handlerBusInput();
             this._handlerBusChange();

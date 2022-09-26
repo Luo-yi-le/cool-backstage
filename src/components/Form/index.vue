@@ -6,11 +6,12 @@
           class="form-col"
           :span="24 / Number(column)"
           :key="index"
-          v-if="!item.disabled && item.componentName"
+          v-if="!item.disabled"
         >
-          <el-form-item v-bind="item">
+          <el-form-item v-bind="item" v-if="item.componentName && !item.slotName">
             <!-- 内容 -->
             <component
+              :componentName="item.componentName"
               :is="item.componentName"
               v-model="formValue[item.prop]"
               v-bind="item.component"
@@ -47,6 +48,21 @@
                 />
               </template>
             </component>
+          </el-form-item>
+
+          <el-form-item
+            v-else
+            v-bind="item"
+            :ttt="JSON.stringify(item)"
+            :name="'slot-' + item.slotName"
+          >
+            <slot
+              v-bind="item"
+              :name="item.slotName"
+              :scope="formValue"
+              :props="item.prop"
+              :component="item"
+            ></slot>
           </el-form-item>
         </el-col>
       </template>
@@ -127,6 +143,7 @@ export default {
       return [style, ...arr];
     },
   },
+  components: {},
   model: {
     prop: "formValue",
     event: "change",

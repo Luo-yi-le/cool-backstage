@@ -19,7 +19,7 @@ import VueQuillEditor from 'vue-quill-editor'
 import 'quill/dist/quill.core.css'
 import 'quill/dist/quill.snow.css'
 import 'quill/dist/quill.bubble.css'
-
+import 'nprogress/nprogress.css'
 import './assets/style/element-variables.scss';
 import './assets/style/index.scss'
 import api from './api';
@@ -33,7 +33,6 @@ Vue.use(directives)
 Vue.prototype.$api = api
 // 把echarts挂载到 Vue原型上，以便在全局访问
 Vue.prototype.$echarts = echarts
-
 // 定义全局时间过滤器
 Object.keys(filters).forEach(key => {
     Vue.filter(key, filters[key])

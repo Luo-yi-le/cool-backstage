@@ -40,14 +40,15 @@
             v-bind="drag"
             item-key="id"
             draggabl=".item"
+            class="container-draggable"
             tag="ul"
             :data-type="item.params.type"
             :data-status="item.params.status"
             :move="changeMove"
+            infinite-scroll-disabled="false"
+            infinite-scroll-immediate="true"
+            infinite-scroll-distance="1"
           >
-            <!-- :data-status="item.params.status"
-            :data-type="item.params.type" -->
-
             <li
               v-for="element in list[index].list"
               :key="element.id"
@@ -104,9 +105,17 @@
               </div>
             </template>
           </draggable>
+          <el-button
+            v-if="item.pagination.total >= item.pagination.size"
+            class="more"
+            type="text"
+            size="mini"
+            @click="moreTask(index)"
+            >查看更多</el-button
+          >
         </div>
         <div class="footer">
-          <button class="btn-add">
+          <button class="btn-add" @click="addTask">
             <i class="el-icon-plus"></i>
           </button>
         </div>
@@ -147,13 +156,17 @@
           <ul
             ref="log-scroller"
             class="scroller1"
-            :infinite-scroll-disabled="logs.list.length == logs.pagination.total"
+            style="overflow: auto"
             v-infinite-scroll="moreLog"
+            infinite-scroll-disabled="false"
+            infinite-scroll-immediate="true"
+            infinite-scroll-distance="1"
           >
             <li
               v-for="(item, index) in logs.list"
               :key="index"
               :class="{ _error: item.status == 0 }"
+              @click="expandLog(item)"
             >
               <div class="h">
                 <span class="name">{{ Number(index) + 1 }} · {{ item.taskName }}</span>
@@ -181,6 +194,28 @@
       @update:show="contextMenuVisible = $event"
     >
     </context-menu>
+
+    <mimi-dialog lock-scroll :visible.sync="visible.show">
+      <template #title>
+        <span>{{ visible.title }}</span>
+      </template>
+      <mimi-form
+        ref="mimiForm"
+        @_handlerBusChange="handlerBusChange"
+        :rules="{}"
+        v-model="formValue"
+        column="2"
+        :form-metas="columns"
+      >
+        <template #slot-cron="{ scope }">
+          <cron v-model="scope.cron" />
+        </template>
+      </mimi-form>
+
+      <template #footer>
+        <el-button type="" @click="submit">提 交</el-button>
+      </template>
+    </mimi-dialog>
   </div>
 </template>
 
@@ -195,6 +230,9 @@ export default {
   name: "Task",
   data() {
     return {
+      formValue: {},
+      data: [],
+      rules: {},
       contextMenuList: [],
       contextMenuTarget: null,
       contextMenuVisible: false,
@@ -271,33 +309,43 @@ export default {
       },
     };
   },
-  computed: {},
+  computed: {
+    columns() {
+      return [...column(this)];
+    },
+  },
   watch: {},
   mounted() {
     this.refreshTask({ page: 1 });
   },
   methods: {
+    handlerBusChange(event) {
+      console.log(event);
+    },
+    addTask() {
+      this.visible.show = true;
+    },
+    submit() {},
     async refreshTask(params, options) {
-      const { index, more } = options || {};
-      const arr =
-        index === undefined || index === null ? this.list.map((e, i) => i) : [index];
-      arr.forEach(async (k) => {
-        const item = this.list[k];
-        Object.assign(item.params, {
-          ...item.pagination,
-          ...params,
+      this.$nextTick(() => {
+        const { index, more } = options || {};
+        const arr =
+          index === undefined || index === null ? this.list.map((e, i) => i) : [index];
+        arr.forEach(async (k) => {
+          const item = this.list[k];
+          Object.assign(item.params, {
+            ...item.pagination,
+            ...params,
+          });
+          item.loading = true;
+          const res = await this.$api.task.page(item.params);
+
+          this.moreList(res, item);
+          if (!more) {
+            this.$refs[`${item.key}-scroller`][0].scroll(0, 0);
+          }
+          item.loading = false;
         });
-        item.loading = true;
-        const res = await this.$api.task.page(item.params);
-        item.loading = false;
-        this.moreList(res, item);
-        // console.log(this.$refs[`${item.key}-scroller`])
-        // if (!more) {
-        //   this.$refs[`${item.key}-scroller`].scroll({
-        //     top: 0,
-        //     behavior: "smooth"
-        //   });
-        // }
       });
     },
     async getTaskLog() {
@@ -330,6 +378,10 @@ export default {
       Object.assign(pagination, res.pagination);
       return page != 1;
     },
+    // 展开
+    expandLog(e) {
+      e._expand = !e._expand;
+    },
 
     // 刷新日志
     async refreshLog(newParams, options) {
@@ -345,17 +397,15 @@ export default {
       this.logs.loading = true;
       const res = await this.$api.task.log(params);
       this.moreList(res, this.logs);
-      // if (!more) {
-      //   this.$refs["log-scroller"].scroll({
-      //     top: 0,
-      //     behavior: "smooth"
-      //   });
-      // }
+      if (!more) {
+        this.$refs["log-scroller"][0].scrollIntoView(0, 0);
+      }
       this.logs.loading = false;
     },
 
     // 更多日志
-    async moreLog() {
+    async moreLog(e) {
+      console.log(e);
       await this.refreshLog(null, { more: true });
     },
     // 查看任务对应的日志
@@ -436,6 +486,9 @@ export default {
       return false;
     },
     async edit(params) {
+      this.visible.show = true;
+      this.formValue = mimi._.clone(params);
+      return;
       const { id, type } = params || {};
       let info = {
         type,
@@ -444,7 +497,7 @@ export default {
         cron: "",
       };
       if (id) {
-        info = await his.$api.task.info({ id });
+        info = await this.$api.task.info({ id });
       }
       if (info.every) {
         info.every /= 1000;
@@ -524,6 +577,9 @@ export default {
   components: {
     draggable: () => import("vuedraggable"),
     ContextMenu: () => import("@/components/ContextMenu"),
+    MimiDialog: () => import("@/components/Dialog"),
+    MimiForm: () => import("@/components/Form"),
+    Cron: () => import("@/components/Cron"),
   },
 };
 </script>
@@ -628,6 +684,9 @@ export default {
       z-index: 2;
       position: relative;
 
+      .container-draggable {
+        max-height: calc(100vh - 140px);
+      }
       ul {
         li {
           list-style: none;
