@@ -13,9 +13,20 @@ const service = axios.create({
 
 service.interceptors.request.use(
     config => {
+        const {state } = store;
         NProgress.start()
-        console.log(store)
         if (store.getters.token) {
+            
+
+            // 请求标识
+			if (config.headers) {
+				config.headers["Authorization"] = store.getters.token;
+			}
+
+			if (config.url?.includes("refreshToken")) {
+				return config;
+			}
+
             config.headers['Authorization'] = getToken()
         }
         if (config.options && config.options.headers) {

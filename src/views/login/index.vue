@@ -84,6 +84,7 @@
             type="primary"
             style="width: 100%; margin-bottom: 30px"
             @click.native.prevent="handleLogin"
+            @keyup.enter="handleLogin"
             >登 录</el-button
           >
         </el-form>
@@ -323,17 +324,18 @@ $light_gray: #eee;
     .captcha-number {
       width: 65%;
       display: flex;
+
+      ::v-deep .el-form-item__content {
+        width: 100%;
+      }
       .captcha {
         display: inline-block;
         position: absolute;
-        right: -55%;
       }
       .captcha-input {
         width: 100%;
       }
-      ::v-deep.el-form-item__content {
-        width: 100%;
-      }
+      
     }
   }
 
