@@ -14,6 +14,7 @@ const service = axios.create({
 service.interceptors.request.use(
     config => {
         NProgress.start()
+        console.log(store)
         if (store.getters.token) {
             config.headers['Authorization'] = getToken()
         }
