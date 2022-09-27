@@ -1,5 +1,11 @@
 <template>
-  <el-form ref="MiMiForm" :model="formValue" v-bind="$attrs" :rules="rules">
+  <el-form
+    ref="MiMiForm"
+    :model="formValue"
+    label-position="top"
+    v-bind="$attrs"
+    :rules="rules"
+  >
     <el-row style="height: 100%" :gutter="10">
       <template v-for="(item, index) in formMetas">
         <el-col
@@ -11,6 +17,7 @@
           <el-form-item v-bind="item" v-if="item.componentName && !item.slotName">
             <!-- 内容 -->
             <component
+              style="width: 100%"
               :componentName="item.componentName"
               :is="item.componentName"
               v-model="formValue[item.prop]"
@@ -50,12 +57,7 @@
             </component>
           </el-form-item>
 
-          <el-form-item
-            v-else
-            v-bind="item"
-            :ttt="JSON.stringify(item)"
-            :name="'slot-' + item.slotName"
-          >
+          <el-form-item v-else v-bind="item" :name="'slot-' + item.slotName">
             <slot
               v-bind="item"
               :name="item.slotName"

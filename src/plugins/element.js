@@ -53,9 +53,13 @@ import {
     RadioGroup,
     Image,
     DatePicker,
-    TimePicker
+    TimePicker,
+    Popover,
+    InputNumber
 } from 'element-ui';
 const components = [
+    InputNumber,
+    Popover,
     Image,
     RadioButton,
     RadioGroup,

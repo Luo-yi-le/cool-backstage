@@ -195,19 +195,18 @@
     >
     </context-menu>
 
-    <mimi-dialog lock-scroll :visible.sync="visible.show">
+    <mimi-dialog lock-scroll :visible.sync="visible.show" v-if="visible.show">
       <template #title>
         <span>{{ visible.title }}</span>
       </template>
       <mimi-form
         ref="mimiForm"
-        @_handlerBusChange="handlerBusChange"
         :rules="{}"
         v-model="formValue"
         column="2"
         :form-metas="columns"
       >
-        <template #slot-cron="{ scope }">
+        <template #slot-cron="{ scope, props, component }">
           <cron v-model="scope.cron" />
         </template>
       </mimi-form>
@@ -220,8 +219,6 @@
 </template>
 
 <script>
-import MimiForm from "@/components/Form";
-
 import { column } from "./filed.js";
 import defaultMixins from "@/mixins/defaultMixins";
 // import { ContextMenu } from '@cool-vue/crud'
@@ -230,7 +227,9 @@ export default {
   name: "Task",
   data() {
     return {
-      formValue: {},
+      formValue: {
+        taskType: 0,
+      },
       data: [],
       rules: {},
       contextMenuList: [],
@@ -314,18 +313,39 @@ export default {
       return [...column(this)];
     },
   },
-  watch: {},
+  watch: {
+    "visible.show"(val) {
+      if (!val) {
+        this.formValue = {
+          taskType: 0,
+        };
+      }
+    },
+  },
   mounted() {
     this.refreshTask({ page: 1 });
   },
   methods: {
-    handlerBusChange(event) {
-      console.log(event);
-    },
     addTask() {
-      this.visible.show = true;
+      this.visible = {
+        show: true,
+        title: "新增任务",
+      };
     },
-    submit() {},
+    async submit() {
+      let res;
+      let message;
+      if (this.formValue.id) {
+        res = await this.$api.task.update(this.formValue);
+        message = "更新成功";
+      } else {
+        res = await this.$api.task.add(this.formValue);
+        message = "添加成功";
+      }
+      this.$message.success(message);
+      this.visible.show = false;
+      await this.refreshTask({ page: 1 });
+    },
     async refreshTask(params, options) {
       this.$nextTick(() => {
         const { index, more } = options || {};
@@ -405,7 +425,6 @@ export default {
 
     // 更多日志
     async moreLog(e) {
-      console.log(e);
       await this.refreshLog(null, { more: true });
     },
     // 查看任务对应的日志
@@ -424,7 +443,8 @@ export default {
     },
 
     // 右键菜单
-    openCM(e, { id, status, type, name }) {
+    openCM(e, params) {
+      const { id, status, type, name } = params;
       const __this = this;
       e.preventDefault();
       __this.$refs.menu.contextMenuHandler(e);
@@ -441,7 +461,7 @@ export default {
           label: "编辑",
           icon: "el-icon-edit",
           callback(done) {
-            __this.edit({ id, type });
+            __this.edit(params);
             done();
           },
         },
@@ -486,7 +506,10 @@ export default {
       return false;
     },
     async edit(params) {
-      this.visible.show = true;
+      this.visible = {
+        show: true,
+        title: "编辑任务" + (params.name ? "--" + params.name : ""),
+      };
       this.formValue = mimi._.clone(params);
       return;
       const { id, type } = params || {};
