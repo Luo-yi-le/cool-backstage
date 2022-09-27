@@ -1,7 +1,7 @@
 import axios from 'axios'
 import { MessageBox, Message } from 'element-ui'
 import store from '@/store';
-import { getToken } from '@/utils/auth';
+import { getToken, Key } from '@/utils/auth';
 import NProgress from 'nprogress'
 const service = axios.create({
     // baseURL: 'https://wulingshan.loca.lt/',
@@ -11,9 +11,14 @@ const service = axios.create({
     // withCredentials: true, // 是否发送cookies
 })
 
+// 请求队列
+let queue = [];
+
+// 是否刷新中
+let isRefreshing = false;
 service.interceptors.request.use(
     config => {
-        const {state } = store;
+        const {state, dispatch } = store;
         NProgress.start()
         if (store.getters.token) {
             
@@ -27,7 +32,40 @@ service.interceptors.request.use(
 				return config;
 			}
 
-            config.headers['Authorization'] = getToken()
+            if(!getToken(Key.TokenKey)) {
+
+                // 判断 refreshToken 是否过期
+				if (!getToken(Key.refreshTokenKey)) {
+					return dispatch('user/logout')
+				}
+
+                // 是否在刷新中
+				if (!isRefreshing) {
+                    isRefreshing = true;
+                    dispatch('user/refreshToken').then((token) => {
+                        queue.forEach((cb) => cb(token));
+                        queue = [];
+                        isRefreshing = false;
+                    })
+                    .catch(() => {
+                        dispatch('user/resetToken');
+                    });
+                }
+
+                return new Promise((resolve) => {
+					// 继续请求
+					queue.push((token) => {
+						// 重新设置 token
+						if (req.headers) {
+							req.headers["Authorization"] = token;
+						}
+						resolve(req);
+					});
+				});
+                
+            }
+
+            // config.headers['Authorization'] = getToken('TokenKey')
         }
         if (config.options && config.options.headers) {
             config.headers = Object.assign({}, config.headers, config.options.headers)

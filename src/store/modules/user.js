@@ -1,9 +1,9 @@
 import { login, logout, getInfo, refreshToken, person, permmenu } from '@/api/user'
-import { getToken, setToken, removeToken } from '@/utils/auth'
+import { getToken, setToken, removeToken, Key, } from '@/utils/auth'
 import router, { resetRouter } from '@/router';
-
+import types from '../mutations/index.type'
 const state = {
-    token: getToken(),
+    token: getToken(Key.TokenKey),
     name: '',
     avatar: '',
     introduction: '',
@@ -12,35 +12,45 @@ const state = {
     userInfo: {},
     tokenInfo: {},
     refreshToken: '',
+    expire: 0,
+    refreshExpire: 0
+    // Date.parse(String(new Date())) + expires * 1000)
 }
 const mutations = {
-    SET_ROLE_ARRAY: (state, roleName) => {
+    [types.SET_ROLE_ARRAY]: (state, roleName) => {
         state.roleName = roleName
     },
-    SET_REFRESH_TOKEN: (state, refreshToken) => {
+    [types.SET_REFRESH_TOKEN]: (state, refreshToken) => {
         state.refreshToken = refreshToken
     },
-    SET_TOKEN_INFO: (state, tokenInfo) => {
+    [types.SET_TOKEN_INFO]: (state, tokenInfo) => {
         state.tokenInfo = tokenInfo
     },
-    SET_USER_INFO: (state, userInfo) => {
+    [types.SET_USER_INFO]: (state, userInfo) => {
         state.userInfo = userInfo
     },
-    SET_TOKEN: (state, token) => {
+    [types.SET_TOKEN]: (state, token) => {
         state.token = token
     },
-    SET_INTRODUCTION: (state, introduction) => {
+    [types.SET_INTRODUCTION]: (state, introduction) => {
         state.introduction = introduction
     },
-    SET_NAME: (state, name) => {
+    [types.SET_NAME]: (state, name) => {
         state.name = name
     },
-    SET_AVATAR: (state, avatar) => {
+    [types.SET_AVATAR]: (state, avatar) => {
         state.avatar = avatar
     },
-    SET_ROLES: (state, roles) => {
+    [types.SET_ROLES]: (state, roles) => {
         state.roles = roles
-    }
+    },
+    [types.SET_EXPIRE]: (state, expire) => {
+        state.expire = expire
+    },
+
+    [types.SET_REFRESH_EXPIRE]: (state, refreshExpire) => {
+        state.refreshExpire = refreshExpire
+    },
 }
 const actions = {
     // user login
@@ -48,11 +58,15 @@ const actions = {
         const { username, password } = userInfo
         return new Promise((resolve, reject) => {
             login(Object.assign({}, userInfo, { username: username.trim(), password: password })).then(response => {
-                const { token, refreshToken, role } = response;
-                commit('SET_TOKEN', token);
-                commit('SET_REFRESH_TOKEN', refreshToken);
-                commit('SET_TOKEN_INFO', response);
-                setToken(token)
+                console.log(response)
+                const { token, refreshToken, expire, refreshExpire } = response;
+                commit(types.SET_TOKEN, token);
+                commit(types.SET_REFRESH_TOKEN, refreshToken);
+                commit(types.SET_TOKEN_INFO, response);
+                setToken(Key.TokenKey, token, 20)
+
+                // 刷新 token 的唯一标识
+                setToken(Key.refreshTokenKey, refreshToken, refreshExpire)
                 resolve(response)
             }).catch(error => {
                 reject(error)
@@ -62,7 +76,7 @@ const actions = {
 
     getInfo({ dispatch, commit, state }) {
         return new Promise((resolve, reject) => {
-            
+
             getInfo().then(response => {
                 const { permmenu, person, info } = response
                 if (!permmenu && !person) {
@@ -72,18 +86,18 @@ const actions = {
                 const { perms, menus } = permmenu;
                 const { name, headImg, remark } = person
                 const roles = info.label;
-                
-                commit('SET_ROLES', roles);
+
+                commit(types.SET_ROLES, roles);
 
                 if (!perms || perms.length <= 0) {
                     reject("权限不能为空！")
                 }
-                commit('SET_USER_INFO', person)
-                commit('SET_ROLE_ARRAY', perms)
-                commit('SET_NAME', name)
-                commit('SET_AVATAR', headImg)
-                commit('SET_INTRODUCTION', remark)
-                resolve({perms, menus, roles})
+                commit(types.SET_USER_INFO, person)
+                commit(types.SET_ROLE_ARRAY, perms)
+                commit(types.SET_NAME, name)
+                commit(types.SET_AVATAR, headImg)
+                commit(types.SET_INTRODUCTION, remark)
+                resolve({ perms, menus, roles })
             }).catch(error => {
                 reject(error)
             })
@@ -92,52 +106,49 @@ const actions = {
 
     // user logout
     logout({ commit, state, dispatch }) {
-        return new Promise((resolve, reject) => {
-            logout(state.token).then(() => {
-                commit('SET_USER_INFO', {})
-                commit('SET_TOKEN', '')
-                commit('SET_ROLES', [])
-                commit('SET_TOKEN_INFO', {});
-                removeToken()
-                resetRouter()
+        logout(state.token).then(() => {
+            commit(types.SET_USER_INFO, {})
+            commit(types.SET_TOKEN_INFO, {});
 
-                dispatch('tagsView/delAllViews', null, { root: true })
+            this.resetToken()
+            resetRouter()
 
-                resolve()
-            }).catch(error => {
-                reject(error)
-            })
+            dispatch('tagsView/delAllViews', null, { root: true })
+
+        }).catch(error => {
+            console.log(error)
         })
+
     },
-    async refreshToken({commit, state}){
+    async refreshToken({ commit, state }) {
         return new Promise((resolve, reject) => {
             refreshToken({
-                refreshToken: getToken()
+                refreshToken: getToken(Key.refreshTokenKey)
             }).then((res) => {
-                setToken(res);
+                setToken(Key.refreshTokenKey, res, 1000000);
                 resolve(res.token);
             })
-            .catch((err) => {
-                logout();
-                reject(err);
-            });
+                .catch((err) => {
+                    logout();
+                    reject(err);
+                });
         })
     },
 
     resetToken({ commit }) {
-        return new Promise(resolve => {
-            commit('SET_TOKEN', '')
-            commit('SET_ROLES', [])
-            removeToken()
-            resolve()
-        })
+
+        commit(types.SET_TOKEN, '')
+        commit(types.SET_ROLES, [])
+        removeToken(Key.TokenKey)
+        removeToken(Key.refreshTokenKey)
+
     },
 
     async changeRoles({ commit, dispatch }, role) {
         const token = role + '-token'
 
-        commit('SET_TOKEN', token)
-        setToken(token)
+        commit(types.SET_TOKEN, token)
+        // setToken(token)
 
         const { roles } = await dispatch('getInfo')
 

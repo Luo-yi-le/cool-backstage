@@ -1,15 +1,26 @@
 import Cookies from 'js-cookie'
 
-const TokenKey = 'Admin-Token'
+export const Key ={
+    TokenKey: 'TokenKey',
+    refreshTokenKey: 'refreshTokenKey'
+};
 
-export function getToken() {
-    return Cookies.get(TokenKey)
+export function getToken(key = Key.TokenKey) {
+    return Cookies.get(key)
 }
 
-export function setToken(token, expires) {
-    return Cookies.set(TokenKey, token, { expires: expires })
+/**
+ * 
+ * @param {*} key 存储key
+ * @param {*} token 
+ * @param {*} expires 有效时间
+ * @returns 
+ */
+export function setToken(key = Key.TokenKey, token, expires) {
+    let time = new Date(new Date() * 1 + expires * 1000)
+    return Cookies.set(key, token, { expires: time })
 }
 
-export function removeToken() {
-    return Cookies.remove(TokenKey)
+export function removeToken(key = Key.TokenKey) {
+    return Cookies.remove(key)
 }
