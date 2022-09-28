@@ -5,7 +5,7 @@ export function login(data, options = {}) {
 }
 
 export function captcha(data, options = {}) {
-    const op = Object.assign({}, { url: '/admin/base/open/captcha', method: 'get', data, }, options)
+    const op = Object.assign({}, { url: '/admin/base/open/captcha', method: 'get', params: data, }, options)
     return request(op)
 }
 /**
@@ -15,7 +15,7 @@ export function captcha(data, options = {}) {
  * @returns 
  */
 export function refreshToken(data, options = {}) {
-    const op = Object.assign({}, { url: '/admin/base/open/refreshToken', method: 'get', data, }, options)
+    const op = Object.assign({}, { url: '/admin/base/open/refreshToken', method: 'get', params: data, }, options)
     return request(op)
 }
 

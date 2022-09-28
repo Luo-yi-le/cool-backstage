@@ -3,7 +3,7 @@ import { getToken, setToken, removeToken, Key, } from '@/utils/auth'
 import router, { resetRouter } from '@/router';
 import types from '../mutations/index.type'
 const state = {
-    token: getToken(Key.TokenKey),
+    token: '',
     name: '',
     avatar: '',
     introduction: '',
@@ -58,12 +58,11 @@ const actions = {
         const { username, password } = userInfo
         return new Promise((resolve, reject) => {
             login(Object.assign({}, userInfo, { username: username.trim(), password: password })).then(response => {
-                console.log(response)
                 const { token, refreshToken, expire, refreshExpire } = response;
                 commit(types.SET_TOKEN, token);
                 commit(types.SET_REFRESH_TOKEN, refreshToken);
                 commit(types.SET_TOKEN_INFO, response);
-                setToken(Key.TokenKey, token, 20)
+                setToken(Key.TokenKey, token, expire)
 
                 // 刷新 token 的唯一标识
                 setToken(Key.refreshTokenKey, refreshToken, refreshExpire)
@@ -111,6 +110,7 @@ const actions = {
             commit(types.SET_TOKEN_INFO, {});
 
             this.resetToken()
+            removeToken(Key.refreshTokenKey)
             resetRouter()
 
             dispatch('tagsView/delAllViews', null, { root: true })
@@ -124,9 +124,18 @@ const actions = {
         return new Promise((resolve, reject) => {
             refreshToken({
                 refreshToken: getToken(Key.refreshTokenKey)
-            }).then((res) => {
-                setToken(Key.refreshTokenKey, res, 1000000);
-                resolve(res.token);
+            }).then((response) => {
+
+                const { token, refreshToken, expire, refreshExpire } = response;
+                commit(types.SET_TOKEN, token);
+                commit(types.SET_REFRESH_TOKEN, refreshToken);
+                commit(types.SET_TOKEN_INFO, response);
+                setToken(Key.TokenKey, token, expire)
+
+                // 刷新 token 的唯一标识
+                setToken(Key.refreshTokenKey, refreshToken, refreshExpire)
+                console.log(response)
+                resolve(token);
             })
                 .catch((err) => {
                     logout();
@@ -140,7 +149,6 @@ const actions = {
         commit(types.SET_TOKEN, '')
         commit(types.SET_ROLES, [])
         removeToken(Key.TokenKey)
-        removeToken(Key.refreshTokenKey)
 
     },
 

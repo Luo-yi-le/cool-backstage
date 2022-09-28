@@ -1,7 +1,13 @@
 import axios from 'axios'
-import { MessageBox, Message } from 'element-ui'
+import {
+    MessageBox,
+    Message
+} from 'element-ui'
 import store from '@/store';
-import { getToken, Key } from '@/utils/auth';
+import {
+    getToken,
+    Key
+} from '@/utils/auth';
 import NProgress from 'nprogress'
 const service = axios.create({
     // baseURL: 'https://wulingshan.loca.lt/',
@@ -11,58 +17,73 @@ const service = axios.create({
     // withCredentials: true, // 是否发送cookies
 })
 
-// 请求队列
-let queue = [];
+let queue = []; //声明一个数组用于存储每个ajax请求的取消函数和ajax标识
+let cancelToken = axios.CancelToken; //引入取消请求方法
+
+// 拼接请求的url和方法，同样的url+方法可以视为相同的请求
+const action = (config) => {
+    return `${config.url}_${config.method}`
+}
+// 中断重复的请求，并从队列中移除
+const removeQueue = (config) => {
+    for (let i = 0, size = queue.length; i < size; i++) {
+        const task = queue[i];
+        if (task.token === action(config)) {
+            task.cancel();
+            queue.splice(i, 1);
+        }
+    }
+}
 
 // 是否刷新中
 let isRefreshing = false;
 service.interceptors.request.use(
     config => {
-        const {state, dispatch } = store;
+        removeQueue(config); // 中断之前的同名请求
+
+        const {
+            state,
+            dispatch
+        } = store;
         NProgress.start()
         if (store.getters.token) {
-            
+
 
             // 请求标识
-			if (config.headers) {
-				config.headers["Authorization"] = store.getters.token;
-			}
+            if (config.headers) {
+                config.headers["Authorization"] = store.getters.token;
+            }
 
-			if (config.url?.includes("refreshToken")) {
-				return config;
-			}
-
-            if(!getToken(Key.TokenKey)) {
+            if (config.url?.includes("refreshToken")) {
+                return config;
+            }
+            if (!getToken(Key.TokenKey)) {
 
                 // 判断 refreshToken 是否过期
-				if (!getToken(Key.refreshTokenKey)) {
-					return dispatch('user/logout')
-				}
-
-                // 是否在刷新中
-				if (!isRefreshing) {
-                    isRefreshing = true;
-                    dispatch('user/refreshToken').then((token) => {
-                        queue.forEach((cb) => cb(token));
-                        queue = [];
-                        isRefreshing = false;
-                    })
-                    .catch(() => {
-                        dispatch('user/resetToken');
-                    });
+                if (!getToken(Key.refreshTokenKey)) {
+                    return dispatch('user/logout')
                 }
 
-                return new Promise((resolve) => {
-					// 继续请求
-					queue.push((token) => {
-						// 重新设置 token
-						if (req.headers) {
-							req.headers["Authorization"] = token;
-						}
-						resolve(req);
-					});
-				});
-                
+                // 是否在刷新中
+                if (!isRefreshing) {
+                    isRefreshing = true;
+                    dispatch('user/refreshToken').then((token) => {
+                            
+                            isRefreshing = false;
+                        })
+                        .catch(() => {
+                            dispatch('user/logout');
+                            location.reload()
+                        });
+                }
+
+                // 添加cancelToken
+                config.cancelToken = new cancelToken((c) => {
+                    queue.push({
+                        token: action(config),
+                        cancel: c
+                    });
+                });
             }
 
             // config.headers['Authorization'] = getToken('TokenKey')
@@ -81,6 +102,9 @@ service.interceptors.request.use(
 service.interceptors.response.use(
     response => {
         NProgress.done()
+        // 在请求完成后，自动移出队列
+        removeQueue(response.config);
+
         const res = response.data;
         if (res.code !== 1000) {
             Message({
@@ -95,9 +119,8 @@ service.interceptors.response.use(
                     cancelButtonText: '关 闭',
                     type: 'warning'
                 }).then(() => {
-                    store.dispatch('user/resetToken').then(() => {
-                        location.reload()
-                    })
+                    store.dispatch('user/logout');
+                    location.reload()
                 })
             }
             return Promise.reject(new Error(res.message || 'Error'))
@@ -113,9 +136,8 @@ service.interceptors.response.use(
                 cancelButtonText: '关 闭',
                 type: 'warning'
             }).then(() => {
-                store.dispatch('user/resetToken').then(() => {
-                    location.reload()
-                })
+                store.dispatch('user/logout');
+                location.reload()
             })
         }
         return Promise.reject(error)
