@@ -45,52 +45,42 @@ service.interceptors.request.use(
             state,
             dispatch
         } = store;
-        NProgress.start()
-        if (store.getters.token) {
+        NProgress.start();
+        if (config.url?.includes("refreshToken")) {
+            return config;
+        }
+        if (!getToken(Key.TokenKey)) {
 
-
-            // 请求标识
-            if (config.headers) {
-                config.headers["Authorization"] = store.getters.token;
+            // 判断 refreshToken 是否过期
+            if (!getToken(Key.refreshTokenKey)) {
+                return dispatch('user/logout')
             }
 
-            if (config.url?.includes("refreshToken")) {
-                return config;
-            }
-            if (!getToken(Key.TokenKey)) {
-
-                // 判断 refreshToken 是否过期
-                if (!getToken(Key.refreshTokenKey)) {
-                    return dispatch('user/logout')
-                }
-
-                // 是否在刷新中
-                if (!isRefreshing) {
-                    isRefreshing = true;
-                    dispatch('user/refreshToken').then((token) => {
-                            
-                            isRefreshing = false;
-                        })
-                        .catch(() => {
-                            dispatch('user/logout');
-                            location.reload()
-                        });
-                }
-
-                // 添加cancelToken
-                config.cancelToken = new cancelToken((c) => {
-                    queue.push({
-                        token: action(config),
-                        cancel: c
+            // 是否在刷新中
+            if (!isRefreshing) {
+                isRefreshing = true;
+                dispatch('user/refreshToken').then((token) => {
+                        config.headers["Authorization"] = token;
+                        isRefreshing = false;
+                    })
+                    .catch(() => {
+                        dispatch('user/logout');
+                        location.reload()
                     });
-                });
             }
 
-            // config.headers['Authorization'] = getToken('TokenKey')
+            // 添加cancelToken
+            config.cancelToken = new cancelToken((c) => {
+                queue.push({
+                    token: action(config),
+                    cancel: c
+                });
+            });
         }
         if (config.options && config.options.headers) {
             config.headers = Object.assign({}, config.headers, config.options.headers)
         }
+        config.headers['Authorization'] = getToken('TokenKey')
         return config
     },
     error => {

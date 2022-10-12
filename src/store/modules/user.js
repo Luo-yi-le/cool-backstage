@@ -109,8 +109,9 @@ const actions = {
             commit(types.SET_USER_INFO, {})
             commit(types.SET_TOKEN_INFO, {});
 
-            this.resetToken()
+            // this.resetToken()
             removeToken(Key.refreshTokenKey)
+            removeToken(Key.TokenKey)
             resetRouter()
 
             dispatch('tagsView/delAllViews', null, { root: true })
