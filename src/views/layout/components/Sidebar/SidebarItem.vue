@@ -57,6 +57,9 @@ export default {
   },
   methods: {
     hasOneShowingChild(children = [], parent) {
+      if(typeof parent.meta.isTree == 'undefined') {
+				parent.meta.isTree = true;
+			}
       const showingChildren = children.filter(item => {
         if (item.hidden) {
           return false
@@ -68,7 +71,7 @@ export default {
       })
 
       // 只有一个子路由器时，默认显示子路由器
-      if (showingChildren.length === 1) {
+      if (showingChildren.length === 1 && !parent.meta.isTree) {
         return true
       }
 
