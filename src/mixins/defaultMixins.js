@@ -19,6 +19,7 @@ export default {
             pageSizes: [5, 10, 20, 30],
             pagerCount: 5,
             hasPage: true,
+            params_query: {},
             buttons: [
                 {
                     type: '',
@@ -35,6 +36,7 @@ export default {
             ],
             defaultFiledButton: [{
                 label: '操作',
+                disabled: true,
                 render: (h, scope) => {
                     return (
                         <div>
@@ -57,7 +59,6 @@ export default {
         }
     },
     created() {
-        console.log(this.$options.name, this.buttons)
     },
     async mounted() {
         await this.init();
@@ -90,7 +91,8 @@ export default {
             return btn                
         },
         async init() {
-            let res = await this.api.list(this.pagination);
+            const data = Object.assign({}, this.pagination, this.params_query)
+            let res = await this.api.list(data);
             if (res) {
                 const { list, pagination } = res;
                 this.tableData = list;
@@ -106,7 +108,6 @@ export default {
             await this.init();
         },
         handleEdit(index, row) {
-            console.log(index, row)
             this.visible.show = true;
             this.formValue = row
         },

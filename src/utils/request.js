@@ -39,7 +39,7 @@ const removeQueue = (config) => {
 let isRefreshing = false;
 service.interceptors.request.use(
     config => {
-        removeQueue(config); // 中断之前的同名请求
+        // removeQueue(config); // 中断之前的同名请求
 
         const {
             state,
@@ -52,30 +52,30 @@ service.interceptors.request.use(
         if (!getToken(Key.TokenKey)) {
 
             // 判断 refreshToken 是否过期
-            if (!getToken(Key.refreshTokenKey)) {
-                return dispatch('user/logout')
-            }
+            // if (!getToken(Key.refreshTokenKey)) {
+            //     return dispatch('user/logout')
+            // }
 
             // 是否在刷新中
-            if (!isRefreshing) {
-                isRefreshing = true;
-                dispatch('user/refreshToken').then((token) => {
-                        config.headers["Authorization"] = token;
-                        isRefreshing = false;
-                    })
-                    .catch(() => {
-                        dispatch('user/logout');
-                        location.reload()
-                    });
-            }
+            // if (!isRefreshing) {
+            //     isRefreshing = true;
+                // dispatch('user/refreshToken').then((token) => {
+                //         config.headers["Authorization"] = token;
+                //         isRefreshing = false;
+                //     })
+                //     .catch(() => {
+                //         dispatch('user/logout');
+                //         location.reload()
+                //     });
+            // }
 
             // 添加cancelToken
-            config.cancelToken = new cancelToken((c) => {
-                queue.push({
-                    token: action(config),
-                    cancel: c
-                });
-            });
+            // config.cancelToken = new cancelToken((c) => {
+            //     queue.push({
+            //         token: action(config),
+            //         cancel: c
+            //     });
+            // });
         }
         if (config.options && config.options.headers) {
             config.headers = Object.assign({}, config.headers, config.options.headers)
@@ -93,7 +93,7 @@ service.interceptors.response.use(
     response => {
         NProgress.done()
         // 在请求完成后，自动移出队列
-        removeQueue(response.config);
+        // removeQueue(response.config);
 
         const res = response.data;
         if (res.code !== 1000) {

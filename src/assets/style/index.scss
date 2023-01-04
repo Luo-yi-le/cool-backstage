@@ -41,6 +41,10 @@ html {
   box-sizing: inherit;
 }
 
+:root {
+	--view-bg-color: #f7f7f7;
+}
+
 .no-padding {
   padding: 0px !important;
 }

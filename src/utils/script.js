@@ -20,8 +20,11 @@ export default {
         return this.getType(v) === '[object Object]';
     },
     clone(v) {
-        if(this.getType(v) == '[object Null]' || this.getType(v) =='[object Undefined]') return '';
+        if (this.getType(v) == '[object Null]' || this.getType(v) == '[object Undefined]') return '';
         return JSON.parse(JSON.stringify(v));
+    },
+    isFunction(value) {
+        return typeof value === "function";
     },
     formatTausends(num) {
         return String(num).replace(/^(\s+|-)?\d+(?=.?\d*($|\s))/g, (m) => {
@@ -94,12 +97,71 @@ export default {
     },
     // 转意符换成普通字符
     escape2Html(str) {
-        var arrEntities = { 'lt': '<', 'gt': '>', 'nbsp': ' ', 'amp': '&', 'quot': '"' };
-        return str.replace(/&(lt|gt|nbsp|amp|quot);/ig, function(all, t) { return arrEntities[t]; });
+        var arrEntities = {
+            'lt': '<',
+            'gt': '>',
+            'nbsp': ' ',
+            'amp': '&',
+            'quot': '"'
+        };
+        return str.replace(/&(lt|gt|nbsp|amp|quot);/ig, function (all, t) {
+            return arrEntities[t];
+        });
+    },
+    isString(value) {
+        return typeof value === "string";
+    },
+    // 路径名称
+    basename(path) {
+        let index = path.lastIndexOf("/");
+        index = index > -1 ? index : path.lastIndexOf("\\");
+        if (index < 0) {
+            return path;
+        }
+        return path.substring(index + 1);
+    },
+    deepPaths(paths, splitor) {
+        const list = [];
+    
+        paths.forEach((e) => {
+            const arr = e.split(splitor || "/").filter(Boolean);
+    
+            let c = list;
+    
+            arr.forEach((a, i) => {
+                let d = c.find((e) => e.label == a);
+    
+                if (!d) {
+                    d = {
+                        label: a,
+                        value: a,
+                        children: arr[i + 1] ? [] : null
+                    };
+    
+                    c.push(d);
+                }
+    
+                if (d.children) {
+                    c = d.children;
+                }
+            });
+        });
+    
+        return list;
+    },
+    contains(parent, node) {
+        return parent !== node && parent && parent.contains(node);
     },
     //普通字符转换成转意符
     html2Escape(sHtml) {
-        return sHtml.replace(/[<>&"]/g, function(c) { return { '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;' }[c]; });
+        return sHtml.replace(/[<>&"]/g, function (c) {
+            return {
+                '<': '&lt;',
+                '>': '&gt;',
+                '&': '&amp;',
+                '"': '&quot;'
+            } [c];
+        });
     },
     exec(script, component, args) {
         let func = null;
@@ -116,7 +178,9 @@ export default {
         } else if (typeof script === 'function') {
             func = script;
         } else {
-            func = () => { return {}; };
+            func = () => {
+                return {};
+            };
         }
         return func.call(component, {
             component,
@@ -125,7 +189,9 @@ export default {
     },
     // 深拷贝 merge 对象
     updateState(target, source) {
-        let newTarget = {...target };
+        let newTarget = {
+            ...target
+        };
         for (let sKey in source) {
             if (source.hasOwnProperty(sKey)) {
                 if (newTarget[sKey]) {
@@ -149,7 +215,9 @@ export default {
     },
     // 深拷贝 merge 对象 (数组合并不覆盖)
     updateState_arraymerge(target, source) {
-        let newTarget = {...target };
+        let newTarget = {
+            ...target
+        };
         for (let sKey in source) {
             if (source.hasOwnProperty(sKey)) {
                 if (newTarget[sKey]) {

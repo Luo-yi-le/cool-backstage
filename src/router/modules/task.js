@@ -14,7 +14,7 @@ const LogRouter = [{
             import('@/views/task/index'),
         name: 'tasker',
         meta: {
-            title: '列表',
+            title: '任务列表',
             roles: ['admin']
         }
     }, ]

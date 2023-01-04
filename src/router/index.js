@@ -5,6 +5,7 @@ import userRouter from './modules/user';
 import systemRouter from './modules/system';
 import wechatRouter from './modules/wechat';
 import taskRouter from './modules/task';
+import mailerRouter from './modules/mailer';
 
 import LogRouter from './modules/log';
 import Layout from '@/views/layout';
@@ -21,6 +22,7 @@ export const constantRoutes = [{
         path: '/',
         component: Layout,
         redirect: 'dashboard',
+        meta: {isTree: false},
         children: [{
             path: 'dashboard',
             component: () =>
@@ -57,6 +59,7 @@ export const asyncRoutes = [
     ...wechatRouter,
     ...LogRouter, 
     ...taskRouter,
+    ...mailerRouter,
     { path: '*', redirect: '/404', hidden: true },
 ]
 

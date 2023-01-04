@@ -1,6 +1,16 @@
 <template>
   <div class="wechatQrCode">
-    <el-image style="width: 100%" :src="qrcode" fit="fill" lazy></el-image>
+    <el-image class="qrcode"  
+      @error="error" 
+      @load="load" 
+      :src="qrcode ? qrcode: require('@/assets/images/wechat/qrcode.jpg')" 
+      fit="fill" 
+      lazy>
+    </el-image>
+    <div class="mask" v-if="!qrcode">
+      <el-button @click="getQrCode"  type="primary" class="i" icon="el-icon-refresh" circle></el-button>
+      <div class="tips">二维码已失效, 请重新刷新</div>
+    </div> 
   </div>
 </template>
 
@@ -16,12 +26,28 @@ export default {
   created() {},
   mounted() {
     this.getQrCode();
-    this.loadConfigData();
+    // this.loadConfigData();
   },
   methods: {
+    setQrCode() {
+      setTimeout(()=>{
+        this.qrcode = ''
+      }, 1000 * 299)
+    },
+    load(E) {
+      // console.log(E)
+    },
+    error(E) {
+      if(E.type == 'error') {
+        this.qrcode = ''
+      }
+    },
     async getQrCode() {
       const res = await this.$api.qrcode();
-      this.qrcode = res;
+      if(res) {
+       this.setQrCode()
+       this.qrcode = res ;
+      }
     },
 
     async loadConfigData() {
@@ -70,7 +96,6 @@ export default {
                 : false;
             // console.log('33333333333333',_this.ifRedirect )
             if (_this.ifRedirect) {
-              // location.replace('https://hdyx.by-health.com/hdcj/doublefestival/entrance/jump?actId=6568&flag=yyjwx');
             }
           },
         });
@@ -86,5 +111,33 @@ export default {
 
 <style scoped lang="scss">
 .wechatQrCode {
+  display: flex;
+  justify-content: center;
+
+  .qrcode{
+    width: 85%;
+    height: 85%;
+  }
+
+  .mask {
+    position: absolute;
+    width: 85%;
+    display: flex;
+    height: 100%;
+    justify-content: center;
+    align-items: center;
+    background: rgb(240 240 240 / 80%);
+
+    .i {
+      font-size: 35px;
+    }
+
+    .tips {
+      position: absolute;
+      bottom: 0;
+      font-size: 20px;
+      color: #409EFF;
+    }
+  }
 }
 </style>

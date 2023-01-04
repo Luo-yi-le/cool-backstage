@@ -34,6 +34,7 @@
           class="container scroller1"
           :ref="`${item.key}-scroller`"
           :key="Math.random() + index"
+          @contextmenu.prevent="openCM"
         >
           <draggable
             v-model="list[index].list"
@@ -48,6 +49,7 @@
             infinite-scroll-disabled="false"
             infinite-scroll-immediate="true"
             infinite-scroll-distance="1"
+            @node-contextmenu="openCM"
           >
             <li
               v-for="element in list[index].list"
@@ -140,7 +142,7 @@
 
           <!-- 操作按钮 -->
           <ul class="op-btn">
-            <li class="refresh-btn">
+            <li class="refresh-btn" @click="allLog">
               <i class="el-icon-refresh"></i>
               <span>刷新</span>
             </li>
@@ -221,7 +223,6 @@
 <script>
 import { column } from "./filed.js";
 import defaultMixins from "@/mixins/defaultMixins";
-// import { ContextMenu } from '@cool-vue/crud'
 export default {
   mixins: [defaultMixins],
   name: "Task",

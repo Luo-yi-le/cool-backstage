@@ -1,0 +1,196 @@
+.cl-crud {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  position: relative;
+  padding: 10px;
+  box-sizing: border-box;
+  background-color: #fff;
+  overflow: hidden;
+}
+.cl-crud > .el-row {
+  margin-bottom: 10px;
+}
+.cl-crud > .el-row:last-child {
+  margin-bottom: 0;
+}
+.cl-crud .flex1 {
+  flex: 1;
+}
+.cl-crud .crud-search-key {
+  display: flex;
+}
+.cl-crud .crud-search-key__input {
+  width: 250px;
+}
+.cl-crud .crud-search-key__select {
+  width: 150px;
+  margin-right: 10px;
+}
+.cl-crud .crud-search-key__button {
+  margin-left: 10px;
+}
+.cl-crud .crud-adv-btn > .el-button {
+  margin-left: 10px;
+}
+.cl-crud .crud-adv-btn > .el-button i {
+  margin-right: 5px;
+}
+.cl-crud .crud-data-table {
+  width: 100%;
+}
+.cl-crud .crud-data-table .el-table .el-loading-mask .el-loading-spinner .el-icon-loading {
+  font-size: 25px;
+  color: #000;
+}
+.cl-crud .crud-data-table .el-table .el-loading-mask .el-loading-spinner .el-loading-text {
+  color: #666;
+  margin-top: 5px;
+}
+.cl-crud .crud-data-table .el-table.el-loading-parent--relative {
+  box-sizing: border-box;
+}
+.cl-crud .crud-data-table .column-op .el-dropdown-link {
+  cursor: pointer;
+  font-size: 12px;
+}
+.cl-crud .crud-query {
+  margin: 0 10px;
+  border-radius: 3px;
+  overflow: hidden;
+  display: flex;
+}
+.cl-crud .crud-query button {
+  border: 0;
+  background-color: #fff;
+  font-size: 12px;
+  outline: none;
+  cursor: pointer;
+  color: #666;
+}
+.cl-crud .crud-query button:hover {
+  color: #6FA8FF;
+}
+.cl-crud .crud-query button.active {
+  color: #409EFF;
+}
+.cl-crud .crud-query button span {
+  display: inline-block;
+  padding: 0 15px;
+  border-right: 1px solid #ddd;
+}
+.cl-crud .crud-query button:last-child span {
+  border: 0;
+}
+.cl-crud .el-input-number__decrease, .cl-crud .el-input-number__increase {
+  border: 0;
+  background-color: transparent;
+}
+
+.el-drawer .crud-adv-search {
+  width: 500px;
+}
+.el-drawer .crud-adv-search__container {
+  height: calc(100vh - 175px);
+  overflow-y: auto;
+  margin-bottom: 10px;
+  padding: 10px 20px 10px 10px;
+}
+.el-drawer .crud-adv-search__footer {
+  display: flex;
+  align-items: center;
+  height: 40px;
+  padding: 10px;
+}
+.el-drawer .crud-adv-search__footer .el-button {
+  flex: 1;
+}
+.el-drawer.ttb .crud-adv-search, .el-drawer.btt .crud-adv-search {
+  width: 100%;
+}
+
+.cl-form .el-form-item .el-input-number__decrease, .cl-form .el-form-item .el-input-number__increase {
+  border: 0;
+  background-color: transparent;
+}
+.cl-form .el-dialog__header {
+  padding: 10px !important;
+  text-align: center;
+  border-bottom: 1px solid #f7f7f7;
+}
+.cl-form .el-dialog__header .el-dialog__title {
+  font-size: 15px;
+  letter-spacing: 0.5px;
+}
+.cl-form .el-dialog__header .el-dialog__headerbtn {
+  display: none;
+  top: 13px;
+}
+.cl-form .el-dialog__header .el-dialog__headerbtn .el-dialog__close {
+  font-size: 18px;
+}
+.cl-form .el-dialog__header._drag {
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  -khtml-user-select: none;
+  user-select: none;
+  cursor: move;
+}
+.cl-form .el-dialog__body {
+  padding: 20px;
+}
+.cl-form .el-dialog__footer {
+  padding-bottom: 15px;
+}
+.cl-form .el-dialog__header-slot {
+  height: 25px;
+  line-height: 25px;
+  text-align: center;
+  position: relative;
+}
+.cl-form .el-dialog__header-slot-title {
+  display: block;
+  font-size: 15px;
+  letter-spacing: 0.5px;
+}
+.cl-form .el-dialog__header-slot-button {
+  display: flex;
+  justify-content: flex-end;
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+}
+.cl-form .el-dialog__header-slot-button .minimize, .cl-form .el-dialog__header-slot-button .maximize, .cl-form .el-dialog__header-slot-button .close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 25px;
+  width: 40px;
+  border: 0;
+  background-color: #fff;
+  cursor: pointer;
+  outline: none;
+}
+.cl-form .el-dialog__header-slot-button .minimize i, .cl-form .el-dialog__header-slot-button .maximize i, .cl-form .el-dialog__header-slot-button .close i {
+  font-size: 16px;
+}
+.cl-form .el-dialog__header-slot-button .minimize i:hover, .cl-form .el-dialog__header-slot-button .maximize i:hover, .cl-form .el-dialog__header-slot-button .close i:hover {
+  opacity: 0.7;
+}
+
+.cl-crud__op-dropdown-menu .el-button {
+  width: 100%;
+  text-align: left;
+}
+
+.cl-svg {
+	width: 1em;
+	height: 1em;
+	vertical-align: -0.15em;
+	fill: currentColor;
+	overflow: hidden;
+}
+
+/*# sourceMappingURL=ttt.css.map */

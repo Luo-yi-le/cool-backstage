@@ -179,7 +179,6 @@ export default {
     },
     // 级联选择器选中项变化 触发该函数
     handleChange(){
-      console.log(this.addForm.goods_cat);
       if(this.addForm.goods_cat.length === 1 || this.addForm.goods_cat.length === 2){
         this.addForm.goods_cat= []
         return this.$message('只允许设置三级分类')
@@ -241,7 +240,6 @@ export default {
       // 访问的是商品参数(动态参数)面板
       if(this.activeIndex === '1'){
         this.getManyTableData()
-        console.log(this.manyTableData);
       }else if(this.activeIndex === '2'){
         this.getOnlyTableData()
       }

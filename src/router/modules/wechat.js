@@ -22,12 +22,31 @@ const wechatRouter = [{
         path: 'message',
         component: () =>
             import ('@/views/wechat/message/index'),
-        name: 'User',
+        name: 'message',
         meta: {
             title: '消息管理',
             roles: ['admin']
         }
-    }, ]
+    }, 
+    {
+        path: 'funs',
+        component: () =>
+            import ('@/views/wechat/funs/index'),
+        name: 'funs',
+        meta: {
+            title: '粉丝管理',
+            roles: ['admin']
+        }
+    },{
+        path: 'tags',
+        component: () =>
+            import ('@/views/wechat/tags/index'),
+        name: 'tags',
+        meta: {
+            title: '粉丝标签',
+            roles: ['admin']
+        }
+    },]
 }]
 
 export default wechatRouter

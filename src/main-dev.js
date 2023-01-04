@@ -8,6 +8,7 @@ import store from './store'
 import echarts from 'echarts';
 import element from './plugins/element.js'
 import TreeTable from "vue-table-with-tree-grid"
+import CRUD from './components/Crud/index'
 
 import './utils/permission' // permission
 import './utils/error-log'
@@ -25,11 +26,13 @@ import './assets/style/index.scss'
 import api from './api';
 import * as filters from './filters'
 import directives from './directives'
+import {createEps } from './service';
 Vue.prototype.$mimi = window.mimi;
 Vue.component('tree-table', TreeTable)
 Vue.use(VueQuillEditor, /* { default global options } */ )
 Vue.use(element, { size: Cookies.get('size') || 'medium', })
-Vue.use(directives)
+Vue.use(directives);
+Vue.use(CRUD);
 Vue.prototype.$api = api
 // 把echarts挂载到 Vue原型上，以便在全局访问
 Vue.prototype.$echarts = echarts
@@ -44,7 +47,9 @@ Object.keys(filters).forEach(key => {
 // }
 
 Vue.config.productionTip = false
-
+createEps().then(res=>{
+    console.log(res)
+}).catch(err=>{})
 new Vue({
     router,
     store,

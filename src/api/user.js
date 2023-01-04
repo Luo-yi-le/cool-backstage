@@ -25,8 +25,8 @@ export function refreshToken(data, options = {}) {
  * @param {*} options 
  * @returns 
  */
- export function person(data, options = {}) {
-    const op = Object.assign({}, { url: '/admin/base/comm/person', method: 'get', data, }, options)
+ export function person(params, options = {}) {
+    const op = Object.assign({}, { url: '/admin/base/comm/person', method: 'get', params, }, options)
     return request(op)
 }
 
@@ -36,8 +36,8 @@ export function refreshToken(data, options = {}) {
  * @param {*} options 
  * @returns 
  */
- export function permmenu(data, options = {}) {
-    const op = Object.assign({}, { url: '/admin/base/comm/permmenu', method: 'get', data, }, options)
+ export function permmenu(params, options = {}) {
+    const op = Object.assign({}, { url: '/admin/base/comm/permmenu', method: 'get', params, }, options)
     return request(op)
 }
 

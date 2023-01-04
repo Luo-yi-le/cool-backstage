@@ -8,22 +8,34 @@ const systemRouter = [{
         title: '系统管理',
         icon: 'system'
     },
-    children: [{
+    children: [
+        {
             path: 'user',
             component: () =>
-                import ('@/views/user/user'),
-            name: 'User',
+                import ('@/views/system/user'),
+            name: 'sysUser',
             meta: {
-                icon: 'bussiness-man',
-                title: '用户管理',
+                icon: 'user',
+                title: '用户列表',
+                roles: ['admin']
+            }
+        },
+        {
+            path: 'role',
+            component: () =>
+                import ('@/views/system/role'),
+            name: 'sysRole',
+            meta: {
+                icon: 'role',
+                title: '角色列表',
                 roles: ['admin']
             }
         },
         {
             path: 'menu',
             component: () =>
-                import ('@/views/user/user'),
-            name: 'User',
+                import ('@/views/system/menu'),
+            name: 'sysMenu',
             meta: {
                 icon: 'menu',
                 title: '菜单管理',

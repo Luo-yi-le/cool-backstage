@@ -24,4 +24,5 @@ export default {
   remove(array, index) {
     return _.remove(array, (item, i) => i !== index );
   },
+  orderBy: _.orderBy
 };

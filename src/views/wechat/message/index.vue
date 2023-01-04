@@ -58,8 +58,14 @@ export default {
     },
   },
   created() {},
-  mounted() {},
+  mounted() {
+    this.getFuns()
+  },
   methods: {
+    async getFuns() {
+      const res = await this.$api.funs.get()
+      console.log(res)
+    },
     submit() {},
   },
   components: {

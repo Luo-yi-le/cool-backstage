@@ -62,12 +62,26 @@ export default {
 .dialog {
   overflow: hidden;
 
+  .dialog-footer {
+  }
+
   ::v-deep .el-dialog {
     overflow: hidden;
-    height: 100%;
+    height: 85%;
+    .el-dialog__header {
+      background: #f0f0f0;
+      border-color: #f0f0f0;
+      color: #000;
+    }
     .el-dialog__body {
-      height: calc(100vh - 36%);
+      padding: 30px 20px 0 20px;
+      height: 470px;
       overflow-y: scroll;
+    }
+    .el-dialog__footer {
+      background: #f0f0f0;
+      border-color: #f0f0f0;
+      color: #000;
     }
   }
 }

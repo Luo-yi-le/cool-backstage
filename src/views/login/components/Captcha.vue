@@ -1,5 +1,5 @@
 <template>
-  <div class="Captcha" @click="refresh">
+  <div class="Captcha" @click="refresh" v-loading="loading">
     <div v-if="svg" class="svg" v-html="svg" />
     <img v-else class="base64" :src="base64" alt="" />
   </div>
@@ -13,6 +13,8 @@ export default {
     return {
       svg: null,
       base64: null,
+      type: '',
+      loading: false,
     };
   },
   created() {},
@@ -20,11 +22,19 @@ export default {
     this.refresh();
   },
   methods: {
+    setType() {
+      const type = ['svg', 'base64'];
+      return type[~~(Math.random()*type.length)]
+    },
     async refresh() {
-      const res = await captcha({ height: 40, width: 150 });
+      this.svg = null;
+      this.base64 = null;
+      this.loading = true;
+      const type = this.setType()
+      const res = await captcha({ type, height: 40, width: 150, }); //ignoreChars: '' 
       if (res) {
         const { captchaId, data } = res;
-        if (data.includes(";base64,")) {
+        if (type == 'base64') {
           this.base64 = data;
         } else {
           this.svg = data;
@@ -36,6 +46,7 @@ export default {
           captchaId,
         });
       }
+      this.loading = false;
     },
   },
 };

@@ -55,9 +55,12 @@ import {
     DatePicker,
     TimePicker,
     Popover,
-    InputNumber
+    InputNumber,
+    Drawer,
+    Link,
 } from 'element-ui';
 const components = [
+    Link,
     InputNumber,
     Popover,
     Image,
@@ -110,6 +113,7 @@ const components = [
     Badge,
     DatePicker,
     TimePicker,
+    Drawer,
 ]
 
 function RepairProps(cmp) {
