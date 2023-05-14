@@ -13,7 +13,8 @@ const state = {
     tokenInfo: {},
     refreshToken: '',
     expire: 0,
-    refreshExpire: 0
+    refreshExpire: 0,
+    permissions: [],
     // Date.parse(String(new Date())) + expires * 1000)
 }
 const mutations = {
@@ -50,6 +51,10 @@ const mutations = {
 
     [types.SET_REFRESH_EXPIRE]: (state, refreshExpire) => {
         state.refreshExpire = refreshExpire
+    },
+
+    [types.SET_PERMOSSIONS]: (state, permissions) => {
+        state.permissions = permissions
     },
 }
 const actions = {
@@ -91,12 +96,14 @@ const actions = {
                 if (!perms || perms.length <= 0) {
                     reject("权限不能为空！")
                 }
+                commit(types.SET_PERMOSSIONS, perms);
                 commit(types.SET_USER_INFO, person)
                 commit(types.SET_ROLE_ARRAY, perms)
                 commit(types.SET_NAME, name)
                 commit(types.SET_AVATAR, headImg)
                 commit(types.SET_INTRODUCTION, remark)
                 resolve({ perms, menus, roles })
+                
             }).catch(error => {
                 reject(error)
             })

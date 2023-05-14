@@ -340,7 +340,7 @@ export default {
 };
 </script>
 
-<style lang="less" scoped>
+<style lang="scss" scoped>
 .zk-table {
   margin-top: 15px;
 }

@@ -8,7 +8,7 @@ import store from './store'
 import echarts from 'echarts';
 import element from './plugins/element.js'
 import TreeTable from "vue-table-with-tree-grid"
-import CRUD from './components/Crud/index'
+
 
 import './utils/permission' // permission
 import './utils/error-log'
@@ -32,7 +32,12 @@ Vue.component('tree-table', TreeTable)
 Vue.use(VueQuillEditor, /* { default global options } */ )
 Vue.use(element, { size: Cookies.get('size') || 'medium', })
 Vue.use(directives);
-Vue.use(CRUD);
+import CRUD from 'crud-super'
+
+// window.System.import(`http://127.0.0.1:5500/lib/crud-super.umd.min.js`).then((CRUD) => {
+//   Vue.use(CRUD.default, { permission: store.getters.permission_role })
+// })
+require('crud-super/lib/crud-super.css');
 Vue.prototype.$api = api
 // 把echarts挂载到 Vue原型上，以便在全局访问
 Vue.prototype.$echarts = echarts
@@ -46,9 +51,10 @@ Object.keys(filters).forEach(key => {
 //     mockXHR()
 // }
 
+Vue.use(CRUD, { permission: store.getters.permissions });
 Vue.config.productionTip = false
 createEps().then(res=>{
-    console.log(res)
+    // console.log(res)
 }).catch(err=>{})
 new Vue({
     router,

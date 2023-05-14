@@ -457,7 +457,7 @@ export default {
 };
 </script>
 
-<style lang="less" scoped>
+<style lang="scss" scoped>
 .mt-5 {
   margin: 15px 0;
 }

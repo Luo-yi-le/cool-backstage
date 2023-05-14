@@ -221,7 +221,7 @@ export default {
 }
 </script>
 
-<style lang="less" scoped>
+<style lang="scss" scoped>
 .title {
   position: absolute;
   left: 50px;

@@ -319,7 +319,7 @@ export default {
 }
 </script>
 
-<style lang="less" scope>
+<style lang="scss" scope>
 #github {
   position: absolute;
   top: 0;

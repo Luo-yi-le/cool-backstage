@@ -100,12 +100,7 @@ export default {
         .service(this.$api.menu)
         .set("table", {
           columns: [
-            {
-              type: "selection",
-              align: "center",
-              width: "60",
-              hidden: true,
-            },
+       
             {
               prop: "name",
               label: "名称",
@@ -347,7 +342,7 @@ export default {
 };
 </script>
 
-<style scoped lang="less">
+<style scoped lang="scss">
 .sys-role {
 }
 </style>

@@ -269,7 +269,7 @@ export default {
 };
 </script>
 
-<style lang="less">
+<style lang="scss">
 .demo-table-expand {
   font-size: 0;
 }

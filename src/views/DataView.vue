@@ -211,7 +211,7 @@ export default {
   },
 }
 </script>
-<style lang="less" scoped>
+<style lang="scss" scoped>
 // 全屏样式的定义
 .fullscreen {
   position: fixed !important;

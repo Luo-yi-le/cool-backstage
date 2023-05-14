@@ -342,7 +342,7 @@ export default {
 };
 </script>
 
-<style lang="less">
+<style lang="scss">
 .no-weight{
   font-weight: 500;
 }

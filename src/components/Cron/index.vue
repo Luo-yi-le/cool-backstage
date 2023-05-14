@@ -22,7 +22,7 @@
 </template>
 
 <script>
-import VueCron from "./Cron";
+import VueCron from "./cron";
 export default {
   emits: ["update:modelvalue", "change"],
   name: "cron",

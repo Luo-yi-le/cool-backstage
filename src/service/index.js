@@ -26,12 +26,12 @@ export async function createEps() {
 					const item = list.find((e) => e.prefix.includes(v[i].namespace));
 
 					// 接口
-					const api = item ? item.api : [];
+					let api = item ? item.api : [];
 
 					// 获取方法集合
 					[...names, ...getNames(v[i])].forEach((e) => {
-						if (!api.find((a) => a.path.includes(e))) {
-							api.push({
+						if (!api?.find((a) => a.path.includes(e))) {
+							api?.push({
 								path: `/${e}`
 							});
 						}
@@ -126,7 +126,7 @@ export async function createEps() {
 								}
 
 								// 创建方法
-								e.api.forEach((a) => {
+								e?.api?.forEach((a) => {
 									// 方法名
 									const n = (a.name || a.path).replace("/", "");
 

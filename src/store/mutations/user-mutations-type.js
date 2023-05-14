@@ -32,6 +32,8 @@ export default {
 
     SET_ROLES: 'SET_ROLES',
 
+    SET_PERMOSSIONS: 'SET_PERMOSSIONS',
+
     /**
      * @description  7200秒 两小时
      * 设置token有效时间

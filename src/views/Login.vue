@@ -142,7 +142,7 @@ export default {
 };
 </script>
 
-<style lang="less" scoped>
+<style lang="scss" scoped>
 .login_container {
   height: 100%;
   background-color: #2b4b6b;

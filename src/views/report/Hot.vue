@@ -213,7 +213,7 @@ export default {
 }
 </script>
 
-<style lang="less" scoped>
+<style lang="scss" scoped>
 .com-container {
   i {
     z-index: 999;
